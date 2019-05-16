@@ -80,3 +80,23 @@ export const deleteMessage = async (variables, token) =>
       },
     },
   );
+
+// channel
+export const createChannel = async (variables, token) => {
+  if (!token) {
+    return axios.post(API_URL, {
+      query: `
+        mutation ($title: String!, $description: String) {
+          createChannel(title: $title, description: $description) {
+            title
+            description
+            user {
+              username
+            }
+          }
+        }
+      `,
+      variables,
+    });
+  }
+};
