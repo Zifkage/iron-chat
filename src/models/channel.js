@@ -1,9 +1,11 @@
 const channel = (sequelize, DataTypes) => {
   const Channel = sequelize.define('channel', {
     title: {
+      type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notEmpty: true,
+        len: [1, 45],
       },
     },
     description: {
@@ -12,15 +14,11 @@ const channel = (sequelize, DataTypes) => {
         len: [1, 125],
       },
     },
-    type: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true,
-        len: [2, 20],
-      },
-    },
   });
+
+  Channel.associate = models => {
+    Channel.belongsTo(models.User);
+  };
 
   return Channel;
 };

@@ -99,4 +99,26 @@ export const createChannel = async (variables, token) => {
       variables,
     });
   }
+  return axios.post(
+    API_URL,
+    {
+      query: `
+        mutation ($title: String!, $description: String) {
+          createChannel(title: $title, description: $description) {
+            title
+            description
+            user {
+              username
+            }
+          }
+        }
+      `,
+      variables,
+    },
+    {
+      headers: {
+        'x-token': token,
+      },
+    },
+  );
 };
