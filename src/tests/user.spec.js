@@ -2,9 +2,13 @@ import { expect } from 'chai';
 
 import * as api from './api';
 
-describe('users', () => {
-  describe('user(id: String!): User', () => {
-    it('returns a user when user can be found', async () => {
+describe('users', function() {
+  after(async function() {
+    await api.eraseTables();
+  });
+
+  describe('user(id: String!): User', function() {
+    it('returns a user when user can be found', async function() {
       const expectedResult = {
         data: {
           user: {
@@ -21,7 +25,7 @@ describe('users', () => {
       expect(result.data).to.eql(expectedResult);
     });
 
-    it('returns null when user cannot be found', async () => {
+    it('returns null when user cannot be found', async function() {
       const expectedResult = {
         data: {
           user: null,
@@ -34,9 +38,9 @@ describe('users', () => {
     });
   });
 
-  describe('deleteUser(id: String!): Boolean!', () => {
-    describe('user is not an admin', () => {
-      it('returns an error because only admins can delete a user', async () => {
+  describe('deleteUser(id: String!): Boolean!', function() {
+    describe('user is not an admin', function() {
+      it('returns an error because only admins can delete a user', async function() {
         const {
           data: {
             data: {

@@ -1,6 +1,15 @@
 import axios from 'axios';
 
 const API_URL = 'http://localhost:8000/graphql';
+import models, { sequelize } from '../models';
+
+export const eraseTables = async () => {
+  Object.keys(models).forEach(key => {
+    if (key !== 'User') {
+      models[key].destroy({ truncate: true });
+    }
+  });
+};
 
 export const user = async variables =>
   axios.post(API_URL, {
@@ -84,7 +93,7 @@ export const deleteMessage = async (variables, token) =>
 // channel
 export const createChannel = async (variables, token) => {
   if (!token) {
-    return axios.post(API_URL, {
+    return await axios.post(API_URL, {
       query: `
         mutation ($title: String!, $description: String) {
           createChannel(title: $title, description: $description) {
@@ -99,7 +108,7 @@ export const createChannel = async (variables, token) => {
       variables,
     });
   }
-  return axios.post(
+  return await axios.post(
     API_URL,
     {
       query: `

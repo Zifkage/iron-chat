@@ -2,9 +2,13 @@ import { expect } from 'chai';
 
 import * as api from './api';
 
-describe('messages', () => {
-  describe('message(id: String!): Message', () => {
-    it('returns a message when message can be found', async () => {
+describe('messages', function() {
+  after(async function() {
+    await api.eraseTables();
+  });
+
+  describe('message(id: String!): Message', function() {
+    it('returns a message when message can be found', async function() {
       const expectedResult = {
         data: {
           message: {
@@ -21,7 +25,7 @@ describe('messages', () => {
       expect(data).to.eql(expectedResult);
     });
 
-    it('returns null when message cannot be found', async () => {
+    it('returns null when message cannot be found', async function() {
       const expectedResult = {
         data: {
           message: null,
@@ -34,9 +38,9 @@ describe('messages', () => {
     });
   });
 
-  describe('deleteMessage(id: String!): Message', () => {
-    describe('user is not the owner', () => {
-      it('returns an error because only owner can delete a message', async () => {
+  describe('deleteMessage(id: String!): Message', function() {
+    describe('user is not the owner', function() {
+      it('returns an error because only owner can delete a message', async function() {
         const {
           data: {
             data: {
