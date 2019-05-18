@@ -10,7 +10,11 @@ const fromCursorHash = string =>
 
 export default {
   Query: {
-    messages: async (parent, { cursor, limit = 100 }, { models }) => {
+    messages: async (
+      _parent,
+      { cursor, limit = 100 },
+      { models },
+    ) => {
       const cursorOptions = cursor
         ? {
             where: {
@@ -39,14 +43,14 @@ export default {
         },
       };
     },
-    message: async (parent, { id }, { models }) => {
+    message: async (_parent, { id }, { models }) => {
       return await models.Message.findByPk(id);
     },
   },
   Mutation: {
     createMessage: combineResolvers(
       isAuthenticated,
-      async (parent, { text }, { me, models }) => {
+      async (_parent, { text }, { me, models }) => {
         const message = await models.Message.create({
           text,
           userId: me.id,
@@ -62,11 +66,11 @@ export default {
     deleteMessage: combineResolvers(
       isAuthenticated,
       isOwner('Message'),
-      async (parent, { id }, { models }) => {
+      async (_parent, { id }, { models }) => {
         return await models.Message.destroy({ where: { id } });
       },
     ),
-    updateMessage: async (parent, { id, text }, { models }) => {
+    updateMessage: async (_parent, { id, text }, { models }) => {
       const message = await models.Message.findByPk(id);
       if (!message) {
         return false;
@@ -77,7 +81,7 @@ export default {
     },
   },
   Message: {
-    user: async (message, args, { loaders }) => {
+    user: async (message, _args, { loaders }) => {
       return await loaders.user.load(message.userId);
     },
   },

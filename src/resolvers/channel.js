@@ -5,7 +5,7 @@ export default {
   Mutation: {
     createChannel: combineResolvers(
       isAuthenticated,
-      async (_, args, { me, models }) => {
+      async (_parent, args, { me, models }) => {
         return models.Channel.create({
           ...args,
           userId: me.id,
@@ -21,7 +21,7 @@ export default {
     ),
   },
   Channel: {
-    user: async (channel, _, { loaders }) => {
+    user: async (channel, _args, { loaders }) => {
       return await loaders.user.load(channel.userId);
     },
   },

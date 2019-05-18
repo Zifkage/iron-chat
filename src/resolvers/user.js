@@ -13,13 +13,13 @@ const createToken = async (user, secret, expiresIn) => {
 
 export default {
   Query: {
-    users: async (parent, args, { models }) => {
+    users: async (_parent, _args, { models }) => {
       return await models.User.findAll();
     },
-    user: async (parent, { id }, { models }) => {
+    user: async (_parent, { id }, { models }) => {
       return await models.User.findByPk(id);
     },
-    me: async (parent, args, { models, me }) => {
+    me: async (_parent, _args, { models, me }) => {
       if (!me) {
         return null;
       }
@@ -28,7 +28,7 @@ export default {
   },
   Mutation: {
     signUp: async (
-      parent,
+      _parent,
       { username, email, password },
       { models, secret },
     ) => {
@@ -41,7 +41,7 @@ export default {
       return { token: createToken(user, secret, '60m') };
     },
     signIn: async (
-      parent,
+      _parent,
       { login, password },
       { models, secret },
     ) => {
@@ -62,7 +62,7 @@ export default {
     },
     deleteUser: combineResolvers(
       isAdmin,
-      async (parent, { id }, { models }) => {
+      async (_parent, { id }, { models }) => {
         return await models.User.destroy({
           where: { id },
         });
@@ -70,7 +70,7 @@ export default {
     ),
   },
   User: {
-    messages: async (user, args, { models }) => {
+    messages: async (user, _args, { models }) => {
       return await models.Message.findAll({
         where: {
           userId: user.id,
