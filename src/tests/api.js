@@ -170,7 +170,7 @@ export const myChannels = async token =>
     },
     {
       headers: {
-        'x-token': token,
+        'x-token': token || '',
       },
     },
   );

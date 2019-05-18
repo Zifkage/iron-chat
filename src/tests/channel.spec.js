@@ -184,6 +184,17 @@ describe('message channels', function() {
           );
         });
       });
+
+      context('user is not authenticated', function() {
+        before(async function() {
+          this.response = await api.myChannels();
+        });
+        it('returns an error because only authenticated user can query user channels list', function() {
+          expect(this.response.data.errors[0].message).to.eql(
+            'Not authenticated as user.',
+          );
+        });
+      });
     });
   });
 });
