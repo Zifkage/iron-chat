@@ -1,4 +1,7 @@
-import { expect } from 'chai';
+import chai, { expect } from 'chai';
+import chaiSubset from 'chai-subset';
+chai.use(chaiSubset);
+import casual from 'casual';
 
 import * as api from './api';
 
@@ -123,6 +126,62 @@ describe('message channels', function() {
           );
 
           expect(deleteChannel).to.be.true;
+        });
+      });
+    });
+  });
+
+  context('query', function() {
+    describe('myChannels(): [Channel!]!', function() {
+      context('user is authenticated', function() {
+        before(async function() {
+          this.expectedResult = {
+            data: {
+              myChannels: [
+                {
+                  title: casual.title,
+                  description: 'my description',
+                  user: {
+                    username: 'ddavids',
+                  },
+                },
+                {
+                  title: casual.title,
+                  description: 'my description',
+                  user: {
+                    username: 'ddavids',
+                  },
+                },
+                {
+                  title: casual.title,
+                  description: 'my description',
+                  user: {
+                    username: 'ddavids',
+                  },
+                },
+              ],
+            },
+          };
+          const {
+            data: { myChannels },
+          } = this.expectedResult;
+          for (let i = 0; i < myChannels.length; i++) {
+            await api.createChannel(
+              myChannels[i],
+              this.tokens.davidToken,
+            );
+          }
+
+          const response = await api.myChannels(
+            this.tokens.davidToken,
+          );
+          this.channelsList = response.data;
+        });
+
+        it('return current user channels list if they exist', function() {
+          expect(this.channelsList).to.containSubset(
+            this.expectedResult,
+          );
         });
       });
     });

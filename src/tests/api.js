@@ -150,3 +150,27 @@ export const deleteChannel = async (variables, token) =>
       },
     },
   );
+
+export const myChannels = async token =>
+  await axios.post(
+    API_URL,
+    {
+      query: `
+        query {
+          myChannels {
+            id
+            title
+            description
+            user {
+              username
+            }
+          }
+        }
+      `,
+    },
+    {
+      headers: {
+        'x-token': token,
+      },
+    },
+  );

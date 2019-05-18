@@ -6,6 +6,10 @@ export default gql`
     deleteChannel(id: ID!): Boolean!
   }
 
+  extend type Query {
+    myChannels: [Channel!]!
+  }
+
   type Channel {
     id: ID!
     title: String!

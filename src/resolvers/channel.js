@@ -20,6 +20,11 @@ export default {
       },
     ),
   },
+  Query: {
+    myChannels: async (_parent, _args, { me, models }) => {
+      return models.Channel.findAll({ where: { userId: me.id } });
+    },
+  },
   Channel: {
     user: async (channel, _args, { loaders }) => {
       return await loaders.user.load(channel.userId);
