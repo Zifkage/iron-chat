@@ -7,6 +7,33 @@ describe('message channels', function() {
     await api.eraseTables();
   });
 
+  before(async function() {
+    const {
+      data: {
+        data: {
+          signIn: { token: zifstarkToken },
+        },
+      },
+    } = await api.signIn({
+      login: 'zifstark',
+      password: 'zifstark',
+    });
+    const {
+      data: {
+        data: {
+          signIn: { token: davidToken },
+        },
+      },
+    } = await api.signIn({
+      login: 'ddavids',
+      password: 'ddavids',
+    });
+    this.tokens = {
+      zifstarkToken,
+      davidToken,
+    };
+  });
+
   context('mutation', function() {
     describe('createChannel', function() {
       context('user is not authenticated', function() {
@@ -24,19 +51,6 @@ describe('message channels', function() {
         });
       });
       context('user is authenticated', function() {
-        before(async function() {
-          const {
-            data: {
-              data: {
-                signIn: { token },
-              },
-            },
-          } = await api.signIn({
-            login: 'zifstark',
-            password: 'zifstark',
-          });
-          this.token = token;
-        });
         it('returns the newly created channel when valid data is given', async function() {
           const expectedResult = {
             data: {
@@ -55,10 +69,42 @@ describe('message channels', function() {
               title: 'classmates',
               description: 'a channel for my classmate and i',
             },
-            this.token,
+            this.tokens.zifstarkToken,
           );
-
+          delete result.data.data.createChannel.id;
           expect(result.data).to.eql(expectedResult);
+        });
+      });
+    });
+
+    describe('deleteChannel(id: String!)', function() {
+      context('user is authenticated', function() {
+        before(async function() {
+          this.response = await api.createChannel(
+            {
+              title: 'my channel',
+              description: 'my channel description',
+            },
+            this.tokens.zifstarkToken,
+          );
+        });
+
+        it('return an error because only owner can delete a channel', async function() {
+          const {
+            data: {
+              data: {
+                createChannel: { id },
+              },
+            },
+          } = this.response;
+
+          const {
+            data: { errors },
+          } = await api.deleteChannel({ id }, this.tokens.davidToken);
+
+          expect(errors[0].message).to.eql(
+            'Not authenticated as owner.',
+          );
         });
       });
     });

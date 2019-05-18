@@ -1,5 +1,5 @@
 import { combineResolvers } from 'graphql-resolvers';
-import { isAuthenticated, isMessageOwner } from './authorization';
+import { isAuthenticated, isOwner } from './authorization';
 import Sequelize from 'sequelize';
 
 import pubsub, { EVENTS } from '../subscription';
@@ -61,7 +61,7 @@ export default {
     ),
     deleteMessage: combineResolvers(
       isAuthenticated,
-      isMessageOwner,
+      isOwner('Message'),
       async (parent, { id }, { models }) => {
         return await models.Message.destroy({ where: { id } });
       },

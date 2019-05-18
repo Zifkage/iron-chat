@@ -1,5 +1,5 @@
 import { combineResolvers } from 'graphql-resolvers';
-import { isAuthenticated } from './authorization';
+import { isAuthenticated, isOwner } from './authorization';
 
 export default {
   Mutation: {
@@ -10,6 +10,13 @@ export default {
           ...args,
           userId: me.id,
         });
+      },
+    ),
+    deleteChannel: combineResolvers(
+      isAuthenticated,
+      isOwner('Channel'),
+      async () => {
+        return '';
       },
     ),
   },

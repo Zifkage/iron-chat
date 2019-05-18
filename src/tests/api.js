@@ -114,6 +114,7 @@ export const createChannel = async (variables, token) => {
       query: `
         mutation ($title: String!, $description: String) {
           createChannel(title: $title, description: $description) {
+            id
             title
             description
             user {
@@ -131,3 +132,21 @@ export const createChannel = async (variables, token) => {
     },
   );
 };
+
+export const deleteChannel = async (variables, token) =>
+  await axios.post(
+    API_URL,
+    {
+      query: `
+        mutation($id: ID!) {
+          deleteChannel(id: $id)
+        }
+      `,
+      variables,
+    },
+    {
+      headers: {
+        'x-token': token,
+      },
+    },
+  );
