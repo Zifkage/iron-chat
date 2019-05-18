@@ -18,7 +18,9 @@ export const isOwner = modelName => async (
   { models, me },
 ) => {
   const entry = await models[modelName].findByPk(id, { raw: true });
-
+  if (!entry) {
+    return skip;
+  }
   if (entry.userId !== me.id) {
     throw new ForbiddenError('Not authenticated as owner.');
   }

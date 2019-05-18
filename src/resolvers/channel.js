@@ -15,8 +15,8 @@ export default {
     deleteChannel: combineResolvers(
       isAuthenticated,
       isOwner('Channel'),
-      async () => {
-        return '';
+      async (_parent, { id }, { models }) => {
+        return await models.Channel.destroy({ where: { id } });
       },
     ),
   },

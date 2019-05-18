@@ -10,7 +10,6 @@ export default gql`
     id: ID!
     title: String!
     description: String
-    type: String!
     user: User!
   }
 `;

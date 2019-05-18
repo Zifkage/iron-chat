@@ -77,34 +77,52 @@ describe('message channels', function() {
       });
     });
 
-    describe('deleteChannel(id: String!)', function() {
+    describe('deleteChannel(id: ID!)', function() {
       context('user is authenticated', function() {
         before(async function() {
-          this.response = await api.createChannel(
+          const response = await api.createChannel(
             {
               title: 'my channel',
               description: 'my channel description',
             },
             this.tokens.zifstarkToken,
           );
-        });
 
-        it('return an error because only owner can delete a channel', async function() {
           const {
             data: {
               data: {
                 createChannel: { id },
               },
             },
-          } = this.response;
+          } = response;
 
+          this.channelId = id;
+        });
+
+        it('returns an error because only owner can delete a channel', async function() {
           const {
             data: { errors },
-          } = await api.deleteChannel({ id }, this.tokens.davidToken);
+          } = await api.deleteChannel(
+            { id: this.channelId },
+            this.tokens.davidToken,
+          );
 
           expect(errors[0].message).to.eql(
             'Not authenticated as owner.',
           );
+        });
+
+        it('returns true when the channel exist and the user is the owner', async function() {
+          const {
+            data: {
+              data: { deleteChannel },
+            },
+          } = await api.deleteChannel(
+            { id: this.channelId },
+            this.tokens.zifstarkToken,
+          );
+
+          expect(deleteChannel).to.be.true;
         });
       });
     });
