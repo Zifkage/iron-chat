@@ -3,10 +3,6 @@ import { expect } from 'chai';
 import * as api from './api';
 
 describe('users', function() {
-  after(async function() {
-    await api.eraseTables();
-  });
-
   describe('user(id: String!): User', function() {
     it('returns a user when user can be found', async function() {
       const expectedResult = {

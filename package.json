@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon --exec babel-node src/index.js",
-    "test": "mocha --require @babel/register --timeout 30000 'src/**/*.spec.js'",
-    "test:watch": "mocha --watch --require @babel/register 'src/**/*.spec.js'",
+    "erase:tables": "babel-node src/tests/eraseTables.js",
+    "test": "mocha --require @babel/register --timeout 20000 'src/**/*.spec.js' && yarn run erase:tables",
+    "test:watch": "mocha --watch --require @babel/register 'src/**/*.spec.js' && yarn run erase:tables",
     "test:server": "TEST_DATABASE=mytestdatabase yarn start"
   },
   "keywords": [],

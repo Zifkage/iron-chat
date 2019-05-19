@@ -6,10 +6,6 @@ import casual from 'casual';
 import * as api from './api';
 
 describe('message channels', function() {
-  after(async function() {
-    await api.eraseTables();
-  });
-
   before(async function() {
     const {
       data: {
@@ -74,8 +70,8 @@ describe('message channels', function() {
             },
             this.tokens.zifstarkToken,
           );
-          delete result.data.data.createChannel.id;
-          expect(result.data).to.eql(expectedResult);
+
+          expect(result.data).to.containSubset(expectedResult);
         });
       });
     });
