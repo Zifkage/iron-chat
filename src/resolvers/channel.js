@@ -19,6 +19,13 @@ export default {
         return await models.Channel.destroy({ where: { id } });
       },
     ),
+    updateChannel: combineResolvers(
+      isAuthenticated,
+      isOwner('Channel'),
+      async () => {
+        return '';
+      },
+    ),
   },
   Query: {
     myChannels: combineResolvers(

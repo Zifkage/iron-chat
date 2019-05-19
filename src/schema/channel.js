@@ -4,6 +4,11 @@ export default gql`
   extend type Mutation {
     createChannel(title: String!, description: String): Channel!
     deleteChannel(id: ID!): Boolean!
+    updateChannel(
+      id: ID!
+      title: String
+      description: String
+    ): Boolean!
   }
 
   extend type Query {

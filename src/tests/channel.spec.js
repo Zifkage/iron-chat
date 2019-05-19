@@ -5,7 +5,7 @@ import casual from 'casual';
 
 import * as api from './api';
 
-describe('message channels', function() {
+describe('channel', function() {
   before(async function() {
     const {
       data: {
@@ -122,6 +122,43 @@ describe('message channels', function() {
           );
 
           expect(deleteChannel).to.be.true;
+        });
+      });
+    });
+
+    describe('updateChannel(id: ID!, title: String, description: String): Boolean!', function() {
+      context('user is not the channel owner', function() {
+        before(async function() {
+          const {
+            data: {
+              data: {
+                createChannel: { id: channelId },
+              },
+            },
+          } = await api.createChannel(
+            {
+              title: casual.title,
+              description: casual.short_description,
+            },
+            this.tokens.zifstarkToken,
+          );
+
+          const response = await api.updateChannel(
+            {
+              id: channelId,
+              title: casual.title,
+              description: casual.short_description,
+            },
+            this.tokens.davidToken,
+          );
+
+          this.errorMessage = response.data.errors[0].message;
+        });
+
+        it('returns an error because only channel owner can update a channel', function() {
+          expect(this.errorMessage).to.eql(
+            'Not authenticated as owner.',
+          );
         });
       });
     });
