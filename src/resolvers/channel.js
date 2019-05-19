@@ -22,8 +22,15 @@ export default {
     updateChannel: combineResolvers(
       isAuthenticated,
       isOwner('Channel'),
-      async () => {
-        return '';
+      async (_parent, args, { models }) => {
+        if (!('title' in args || 'description' in args)) {
+          return false;
+        }
+        const result = await models.Channel.update(
+          { ...args },
+          { where: { id: args.id } },
+        );
+        return result[0] > 0;
       },
     ),
   },

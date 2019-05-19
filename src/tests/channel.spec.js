@@ -127,25 +127,28 @@ describe('channel', function() {
     });
 
     describe('updateChannel(id: ID!, title: String, description: String): Boolean!', function() {
+      before(async function() {
+        const {
+          data: {
+            data: {
+              createChannel: { id },
+            },
+          },
+        } = await api.createChannel(
+          {
+            title: casual.title,
+            description: casual.short_description,
+          },
+          this.tokens.zifstarkToken,
+        );
+
+        this.channelId = id;
+      });
       context('user is not the channel owner', function() {
         before(async function() {
-          const {
-            data: {
-              data: {
-                createChannel: { id: channelId },
-              },
-            },
-          } = await api.createChannel(
-            {
-              title: casual.title,
-              description: casual.short_description,
-            },
-            this.tokens.zifstarkToken,
-          );
-
           const response = await api.updateChannel(
             {
-              id: channelId,
+              id: this.channelId,
               title: casual.title,
               description: casual.short_description,
             },
@@ -159,6 +162,26 @@ describe('channel', function() {
           expect(this.errorMessage).to.eql(
             'Not authenticated as owner.',
           );
+        });
+      });
+
+      context('user is the channel owner', function() {
+        before(async function() {
+          const response = await api.updateChannel(
+            {
+              id: this.channelId,
+              title: casual.title,
+              description: casual.short_description,
+            },
+            this.tokens.zifstarkToken,
+          );
+          console.log(response.data);
+
+          this.updateChannel = response.data.data.updateChannel;
+        });
+
+        it('returns an error because only channel owner can update a channel', function() {
+          expect(this.updateChannel).to.be.true;
         });
       });
     });
