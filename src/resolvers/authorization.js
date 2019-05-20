@@ -12,9 +12,9 @@ export const isAdmin = combineResolvers(
       : new ForbiddenError('Not authorized as admin.'),
 );
 
-export const isOwner = modelName => async (
+export const isOwner = (modelName, idField = 'id') => async (
   _parent,
-  { id },
+  { [idField]: id },
   { models, me },
 ) => {
   const entry = await models[modelName].findByPk(id, { raw: true });

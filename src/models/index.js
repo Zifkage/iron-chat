@@ -16,6 +16,7 @@ const models = {
   User: sequelize.import('./user'),
   Message: sequelize.import('./message'),
   Channel: sequelize.import('./channel'),
+  Member: sequelize.import('./member'),
 };
 
 Object.keys(models).forEach(key => {

@@ -192,3 +192,21 @@ export const updateChannel = async (variables, token) =>
       },
     },
   );
+
+export const addMembers = async (variables, token) =>
+  await axios.post(
+    API_URL,
+    {
+      query: `
+        mutation($channelId: ID!, $ids: [ID!]!) {
+          addMembers(channelId: $channelId, ids: $ids)
+        }
+      `,
+      variables,
+    },
+    {
+      headers: {
+        'x-token': token,
+      },
+    },
+  );

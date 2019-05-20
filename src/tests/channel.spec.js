@@ -175,7 +175,6 @@ describe('channel', function() {
             },
             this.tokens.zifstarkToken,
           );
-          console.log(response.data);
 
           this.updateChannel = response.data.data.updateChannel;
         });
