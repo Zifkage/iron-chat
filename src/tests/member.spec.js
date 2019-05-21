@@ -112,6 +112,24 @@ describe('member', function() {
       it('return an array of newly added members', function() {
         expect(this.expectedResult).to.containSubset(this.addMembers);
       });
+
+      before(async function() {
+        const response = await api.addMembers(
+          {
+            channelId: this.channels.zifstarkChlId,
+            usersIds: ['2'],
+          },
+          this.tokens.zifstarkToken,
+        );
+
+        this.errorMessage = response.data.errors[0].message;
+      });
+
+      it('return an error when a user is already a member', function() {
+        expect(this.errorMessage).to.eql(
+          'Cannot add a member to a channel more than once.',
+        );
+      });
     });
   });
 });
