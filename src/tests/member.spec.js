@@ -105,6 +105,14 @@ describe('member', function() {
               id: this.channels.zifstarkChlId,
             },
           },
+          {
+            user: {
+              username: 'zifstark',
+            },
+            channel: {
+              id: this.channels.zifstarkChlId,
+            },
+          },
         ];
         this.addMembers = response.data.data.addMembers;
       });

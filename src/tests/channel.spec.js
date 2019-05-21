@@ -50,8 +50,8 @@ describe('channel', function() {
         });
       });
       context('user is authenticated', function() {
-        it('returns the newly created channel when valid data is given', async function() {
-          const expectedResult = {
+        before(async function() {
+          this.expectedResult = {
             data: {
               createChannel: {
                 title: 'classmates',
@@ -63,15 +63,30 @@ describe('channel', function() {
             },
           };
 
-          const result = await api.createChannel(
+          this.result = await api.createChannel(
             {
               title: 'classmates',
               description: 'a channel for my classmate and i',
             },
             this.tokens.zifstarkToken,
           );
+        });
 
-          expect(result.data).to.containSubset(expectedResult);
+        it('returns the newly created channel when valid data is given', async function() {
+          expect(this.result.data).to.containSubset(
+            this.expectedResult,
+          );
+        });
+
+        it('should automatically the channel owner as member', function() {
+          const {
+            data: {
+              createChannel: { members },
+            },
+          } = this.result.data;
+          expect(members).to.deep.contain({
+            user: { username: 'zifstark' },
+          });
         });
       });
     });

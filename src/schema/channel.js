@@ -20,5 +20,6 @@ export default gql`
     title: String!
     description: String
     user: User!
+    members: [Member!]!
   }
 `;

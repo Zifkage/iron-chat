@@ -120,6 +120,11 @@ export const createChannel = async (variables, token) => {
             user {
               username
             }
+            members {
+              user {
+                username
+              }
+            }
           }
         }
       `,

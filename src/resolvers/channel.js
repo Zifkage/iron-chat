@@ -6,10 +6,18 @@ export default {
     createChannel: combineResolvers(
       isAuthenticated,
       async (_parent, args, { me, models }) => {
-        return models.Channel.create({
-          ...args,
-          userId: me.id,
-        });
+        return await models.Channel.create(
+          {
+            ...args,
+            userId: me.id,
+            members: [
+              {
+                userId: me.id,
+              },
+            ],
+          },
+          { include: [models.Member] },
+        );
       },
     ),
     deleteChannel: combineResolvers(
@@ -45,6 +53,11 @@ export default {
   Channel: {
     user: async (channel, _args, { loaders }) => {
       return await loaders.user.load(channel.userId);
+    },
+    members: async (channel, _args, { models }) => {
+      return await models.Member.findAll({
+        where: { channelId: channel.id },
+      });
     },
   },
 };
