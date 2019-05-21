@@ -179,7 +179,7 @@ describe('channel', function() {
           this.updateChannel = response.data.data.updateChannel;
         });
 
-        it('returns an error because only channel owner can update a channel', function() {
+        it('returns true', function() {
           expect(this.updateChannel).to.be.true;
         });
       });
