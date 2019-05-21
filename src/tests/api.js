@@ -198,8 +198,15 @@ export const addMembers = async (variables, token) =>
     API_URL,
     {
       query: `
-        mutation($channelId: ID!, $ids: [ID!]!) {
-          addMembers(channelId: $channelId, ids: $ids)
+        mutation($channelId: ID!, $usersIds: [ID!]!) {
+          addMembers(channelId: $channelId, usersIds: $usersIds) {
+            user {
+              username
+            }
+            channel {
+              id
+            }
+          }
         }
       `,
       variables,

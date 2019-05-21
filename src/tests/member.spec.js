@@ -66,16 +66,17 @@ describe('member', function() {
       davidChlId,
     };
   });
-  describe('addMembers(channelId: ID!, ids: [ID!]!)', function() {
+  describe('addMembers(channelId: ID!, usersIds: [ID!]!) : [Member!]!', function() {
     context('user is not the channel owner', function() {
       before(async function() {
         const response = await api.addMembers(
           {
             channelId: this.channels.zifstarkChlId,
-            ids: ['2', '4'],
+            usersIds: ['2'],
           },
           this.tokens.davidToken,
         );
+
         this.errorMessage = response.data.errors[0].message;
       });
 
@@ -83,6 +84,33 @@ describe('member', function() {
         expect(this.errorMessage).to.eql(
           'Not authenticated as owner.',
         );
+      });
+    });
+    context('user is the channel owner', function() {
+      before(async function() {
+        const response = await api.addMembers(
+          {
+            channelId: this.channels.zifstarkChlId,
+            usersIds: ['2'],
+          },
+          this.tokens.zifstarkToken,
+        );
+
+        this.expectedResult = [
+          {
+            user: {
+              username: 'ddavids',
+            },
+            channel: {
+              id: this.channels.zifstarkChlId,
+            },
+          },
+        ];
+        this.addMembers = response.data.data.addMembers;
+      });
+
+      it('return an array of newly added members', function() {
+        expect(this.expectedResult).to.containSubset(this.addMembers);
       });
     });
   });

@@ -51,9 +51,11 @@ const server = new ApolloServer({
       return {
         models,
         loaders: {
-          user: new DataLoader(
-            keys => loaders.user.batchUsers(keys, models),
-            models,
+          user: new DataLoader(keys =>
+            loaders.user.batchUsers(keys, models),
+          ),
+          channel: new DataLoader(keys =>
+            loaders.channel.batchChannels(keys, models),
           ),
         },
       };
@@ -69,6 +71,9 @@ const server = new ApolloServer({
         loaders: {
           user: new DataLoader(keys =>
             loaders.user.batchUsers(keys, models),
+          ),
+          channel: new DataLoader(keys =>
+            loaders.channel.batchChannels(keys, models),
           ),
         },
       };
