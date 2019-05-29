@@ -91,7 +91,7 @@ describe('channel', function() {
       });
     });
 
-    describe('deleteChannel(id: ID!)', function() {
+    describe('deleteChannel(id: ID!): Boolean!', function() {
       context('user is authenticated', function() {
         before(async function() {
           const response = await api.createChannel(

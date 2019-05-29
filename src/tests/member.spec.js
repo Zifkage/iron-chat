@@ -66,77 +66,82 @@ describe('member', function() {
       davidChlId,
     };
   });
-  describe('addMembers(channelId: ID!, usersIds: [ID!]!) : [Member!]!', function() {
-    context('user is not the channel owner', function() {
-      before(async function() {
-        const response = await api.addMembers(
-          {
-            channelId: this.channels.zifstarkChlId,
-            usersIds: ['2'],
-          },
-          this.tokens.davidToken,
-        );
 
-        this.errorMessage = response.data.errors[0].message;
-      });
-
-      it('returns an error because only channel owner can add members', function() {
-        expect(this.errorMessage).to.eql(
-          'Not authenticated as owner.',
-        );
-      });
-    });
-    context('user is the channel owner', function() {
-      before(async function() {
-        const response = await api.addMembers(
-          {
-            channelId: this.channels.zifstarkChlId,
-            usersIds: ['2'],
-          },
-          this.tokens.zifstarkToken,
-        );
-
-        this.expectedResult = [
-          {
-            user: {
-              username: 'ddavids',
+  describe('mutation', function() {
+    describe('addMembers(channelId: ID!, usersIds: [ID!]!) : [Member!]!', function() {
+      context('user is not the channel owner', function() {
+        before(async function() {
+          const response = await api.addMembers(
+            {
+              channelId: this.channels.zifstarkChlId,
+              usersIds: ['2'],
             },
-            channel: {
-              id: this.channels.zifstarkChlId,
-            },
-          },
-          {
-            user: {
-              username: 'zifstark',
-            },
-            channel: {
-              id: this.channels.zifstarkChlId,
-            },
-          },
-        ];
-        this.addMembers = response.data.data.addMembers;
+            this.tokens.davidToken,
+          );
+
+          this.errorMessage = response.data.errors[0].message;
+        });
+
+        it('returns an error because only channel owner can add members', function() {
+          expect(this.errorMessage).to.eql(
+            'Not authenticated as owner.',
+          );
+        });
       });
+      context('user is the channel owner', function() {
+        before(async function() {
+          const response = await api.addMembers(
+            {
+              channelId: this.channels.zifstarkChlId,
+              usersIds: ['2'],
+            },
+            this.tokens.zifstarkToken,
+          );
 
-      it('return an array of newly added members', function() {
-        expect(this.expectedResult).to.containSubset(this.addMembers);
-      });
+          this.expectedResult = [
+            {
+              user: {
+                username: 'ddavids',
+              },
+              channel: {
+                id: this.channels.zifstarkChlId,
+              },
+            },
+            {
+              user: {
+                username: 'zifstark',
+              },
+              channel: {
+                id: this.channels.zifstarkChlId,
+              },
+            },
+          ];
+          this.addMembers = response.data.data.addMembers;
+        });
 
-      before(async function() {
-        const response = await api.addMembers(
-          {
-            channelId: this.channels.zifstarkChlId,
-            usersIds: ['2'],
-          },
-          this.tokens.zifstarkToken,
-        );
+        it('return an array of newly added members', function() {
+          expect(this.expectedResult).to.containSubset(
+            this.addMembers,
+          );
+        });
 
-        this.errorMessage = response.data.errors[0].message;
-      });
+        before(async function() {
+          const response = await api.addMembers(
+            {
+              channelId: this.channels.zifstarkChlId,
+              usersIds: ['2'],
+            },
+            this.tokens.zifstarkToken,
+          );
 
-      it('return an error when a user is already a member', function() {
-        expect(this.errorMessage).to.eql(
-          'Cannot add a member to a channel more than once.',
-        );
+          this.errorMessage = response.data.errors[0].message;
+        });
+
+        it('return an error when a user is already a member', function() {
+          expect(this.errorMessage).to.eql(
+            'Cannot add a member to a channel more than once.',
+          );
+        });
       });
     });
   });
