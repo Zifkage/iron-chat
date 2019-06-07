@@ -1,15 +1,6 @@
 import axios from 'axios';
 
 const API_URL = 'http://localhost:8000/graphql';
-import models, { sequelize } from '../models';
-
-export const eraseTables = async () => {
-  Object.keys(models).forEach(key => {
-    if (key !== 'User') {
-      models[key].destroy({ truncate: true });
-    }
-  });
-};
 
 export const user = async variables =>
   axios.post(API_URL, {

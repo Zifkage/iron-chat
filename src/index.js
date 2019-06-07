@@ -99,18 +99,16 @@ sequelize.sync({ force: isTest }).then(async () => {
 });
 
 const createUsers = async () => {
-  await models.User.bulkCreate([
-    {
-      username: 'zifstark',
-      email: 'zif@gmail.com',
-      password: 'zifstark',
-      roles: ['ADMIN'],
-    },
-    {
-      username: 'ddavids',
-      password: 'ddavids',
-      email: 'hello@david.com',
-      roles: [],
-    },
-  ]);
+  await models.User.create({
+    username: 'zifstark',
+    email: 'zif@gmail.com',
+    password: 'zifstark',
+    roles: ['ADMIN'],
+  });
+  await models.User.create({
+    username: 'ddavids',
+    password: 'ddavids',
+    email: 'hello@david.com',
+    roles: [],
+  });
 };
