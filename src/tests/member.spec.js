@@ -99,6 +99,48 @@ describe('member', function() {
           expect(this.errorMessage).to.eql('Not a channel member.');
         });
       });
+
+      context('user is a channel member', function() {
+        before(async function() {
+          await api.addMembers(
+            {
+              channelId: this.channels.davidChlId,
+              usersIds: ['1'],
+            },
+            this.tokens.davidToken,
+          );
+          const response = await api.members(
+            {
+              channelId: this.channels.davidChlId,
+            },
+            this.tokens.zifstarkToken,
+          );
+
+          this.expectedResult = [
+            {
+              user: {
+                username: 'ddavids',
+              },
+              channel: {
+                id: this.channels.davidChlId,
+              },
+            },
+            {
+              user: {
+                username: 'zifstark',
+              },
+              channel: {
+                id: this.channels.davidChlId,
+              },
+            },
+          ];
+          this.members = response.data.data.members;
+        });
+
+        it('return the channel members list', function() {
+          expect(this.members).to.eql(this.expectedResult);
+        });
+      });
     });
   });
 

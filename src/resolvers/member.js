@@ -8,12 +8,15 @@ export default {
       isAuthenticated,
       async (_parent, { channelId }, { me, models }) => {
         const member = await models.Member.findOne({
-          where: { userId: me.id, channelId: channelId },
+          where: { userId: me.id, channelId },
         });
         if (!member) {
           throw new ForbiddenError('Not a channel member.');
         }
-        return [];
+        const members = await models.Member.findAll({
+          where: { channelId },
+        });
+        return members;
       },
     ),
   },
