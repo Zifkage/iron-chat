@@ -90,7 +90,7 @@ const isTest = !!process.env.TEST_DATABASE;
 
 sequelize.sync({ force: isTest }).then(async () => {
   if (isTest) {
-    createUsersWithMessages(new Date());
+    createUsers();
   }
 
   httpServer.listen({ port: 8000 }, () => {
@@ -98,7 +98,7 @@ sequelize.sync({ force: isTest }).then(async () => {
   });
 });
 
-const createUsersWithMessages = async date => {
+const createUsers = async () => {
   await models.User.bulkCreate([
     {
       username: 'zifstark',
@@ -113,5 +113,4 @@ const createUsersWithMessages = async date => {
       roles: [],
     },
   ]);
-  await models.User;
 };
