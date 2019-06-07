@@ -67,6 +67,25 @@ describe('member', function() {
     };
   });
 
+  describe('query', function() {
+    describe('members(channelId: ID!): [Member!]!', function() {
+      context('user is not authenticated', function() {
+        before(async function() {
+          const response = await api.members({
+            channelId: this.channels.zifstarkChlId,
+          });
+          this.errorMessage = response.data.errors[0].message;
+        });
+
+        it('returns an error because only authenticated user can query channel members list', function() {
+          expect(this.errorMessage).to.eql(
+            'Not authenticated as user.',
+          );
+        });
+      });
+    });
+  });
+
   describe('mutation', function() {
     describe('addMembers(channelId: ID!, usersIds: [ID!]!) : [Member!]!', function() {
       context('user is not the channel owner', function() {

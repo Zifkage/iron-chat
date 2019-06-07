@@ -3,6 +3,11 @@ import { isAuthenticated, isOwner } from './authorization';
 import { ForbiddenError } from 'apollo-server';
 
 export default {
+  Query: {
+    members: combineResolvers(isAuthenticated, async () => {
+      return [];
+    }),
+  },
   Mutation: {
     addMembers: combineResolvers(
       isAuthenticated,

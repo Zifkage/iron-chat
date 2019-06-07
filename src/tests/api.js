@@ -222,3 +222,28 @@ export const addMembers = async (variables, token) =>
       },
     },
   );
+
+export const members = async (variables, token) =>
+  await axios.post(
+    API_URL,
+    {
+      query: `
+          query($channelId: ID!) {
+            members(channelId: $channelId,) {
+              user {
+                username
+              }
+              channel {
+                id
+              }
+            }
+          }
+        `,
+      variables,
+    },
+    {
+      headers: {
+        'x-token': token || '',
+      },
+    },
+  );

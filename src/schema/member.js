@@ -5,6 +5,10 @@ export default gql`
     addMembers(channelId: ID!, usersIds: [ID!]!): [Member!]!
   }
 
+  extend type Query {
+    members(channelId: ID!): [Member!]!
+  }
+
   type Member {
     id: ID!
     user: User!

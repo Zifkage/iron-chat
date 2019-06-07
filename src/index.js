@@ -99,44 +99,19 @@ sequelize.sync({ force: isTest }).then(async () => {
 });
 
 const createUsersWithMessages = async date => {
-  await models.User.create(
+  await models.User.bulkCreate([
     {
       username: 'zifstark',
       email: 'zif@gmail.com',
       password: 'zifstark',
       roles: ['ADMIN'],
-      messages: [
-        {
-          text: 'Winter is coming!',
-          createdAt: date.setSeconds(date.getSeconds() + 1),
-        },
-      ],
     },
-    {
-      include: [models.Message],
-    },
-  );
-
-  await models.User.create(
     {
       username: 'ddavids',
       password: 'ddavids',
       email: 'hello@david.com',
       roles: [],
-      messages: [
-        {
-          text: 'Happy to release ...',
-          createdAt: date.setSeconds(date.getSeconds() + 1),
-        },
-        {
-          text: 'Published a complete ...',
-        },
-      ],
     },
-    {
-      include: [models.Message],
-    },
-  );
-
+  ]);
   await models.User;
 };
