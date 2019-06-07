@@ -4,9 +4,18 @@ import { ForbiddenError } from 'apollo-server';
 
 export default {
   Query: {
-    members: combineResolvers(isAuthenticated, async () => {
-      return [];
-    }),
+    members: combineResolvers(
+      isAuthenticated,
+      async (_parent, { channelId }, { me, models }) => {
+        const member = await models.Member.findOne({
+          where: { userId: me.id, channelId: channelId },
+        });
+        if (!member) {
+          throw new ForbiddenError('Not a channel member.');
+        }
+        return [];
+      },
+    ),
   },
   Mutation: {
     addMembers: combineResolvers(

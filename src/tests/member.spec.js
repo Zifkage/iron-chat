@@ -83,6 +83,22 @@ describe('member', function() {
           );
         });
       });
+
+      context('user is not a channel member', function() {
+        before(async function() {
+          const response = await api.members(
+            {
+              channelId: this.channels.zifstarkChlId,
+            },
+            this.tokens.davidToken,
+          );
+          this.errorMessage = response.data.errors[0].message;
+        });
+
+        it('returns an error because only channel members can query channel members list', function() {
+          expect(this.errorMessage).to.eql('Not a channel member.');
+        });
+      });
     });
   });
 
