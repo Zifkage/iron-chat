@@ -4,6 +4,7 @@ chai.use(chaiSubset);
 import casual from 'casual';
 
 import * as api from './api';
+import models from '../models';
 
 describe('member', function() {
   before(async function() {
@@ -28,51 +29,30 @@ describe('member', function() {
       password: 'ddavids',
     });
 
-    const {
-      data: {
-        data: {
-          createChannel: { id: zifstarkChlId },
-        },
-      },
-    } = await api.createChannel(
-      {
-        title: casual.title,
-        description: casual.short_description,
-      },
-      zifstarkToken,
-    );
-
-    const {
-      data: {
-        data: {
-          createChannel: { id: davidChlId },
-        },
-      },
-    } = await api.createChannel(
-      {
-        title: casual.title,
-        description: casual.short_description,
-      },
-      davidToken,
-    );
-
     this.tokens = {
       zifstarkToken,
       davidToken,
-    };
-
-    this.channels = {
-      zifstarkChlId,
-      davidChlId,
     };
   });
 
   describe('query', function() {
     describe('members(channelId: ID!): [Member!]!', function() {
+      before(async function() {
+        this.channel = await models.Channel.create({
+          title: casual.title,
+          description: casual.short_description,
+          userId: 1,
+        });
+        await models.Member.create({
+          userId: 1,
+          channelId: this.channel.id,
+        });
+      });
+
       context('user is not authenticated', function() {
         before(async function() {
           const response = await api.members({
-            channelId: this.channels.zifstarkChlId,
+            channelId: this.channel.id,
           });
           this.errorMessage = response.data.errors[0].message;
         });
@@ -88,7 +68,7 @@ describe('member', function() {
         before(async function() {
           const response = await api.members(
             {
-              channelId: this.channels.zifstarkChlId,
+              channelId: this.channel.id,
             },
             this.tokens.davidToken,
           );
@@ -102,35 +82,32 @@ describe('member', function() {
 
       context('user is a channel member', function() {
         before(async function() {
-          await api.addMembers(
-            {
-              channelId: this.channels.davidChlId,
-              usersIds: ['1'],
-            },
-            this.tokens.davidToken,
-          );
+          await models.Member.create({
+            userId: 2,
+            channelId: this.channel.id,
+          });
           const response = await api.members(
             {
-              channelId: this.channels.davidChlId,
+              channelId: this.channel.id,
             },
-            this.tokens.zifstarkToken,
+            this.tokens.davidToken,
           );
 
           this.expectedResult = [
             {
               user: {
-                username: 'ddavids',
+                username: 'zifstark',
               },
               channel: {
-                id: this.channels.davidChlId,
+                id: this.channel.id.toString(),
               },
             },
             {
               user: {
-                username: 'zifstark',
+                username: 'ddavids',
               },
               channel: {
-                id: this.channels.davidChlId,
+                id: this.channel.id.toString(),
               },
             },
           ];
@@ -146,11 +123,22 @@ describe('member', function() {
 
   describe('mutation', function() {
     describe('addMembers(channelId: ID!, usersIds: [ID!]!) : [Member!]!', function() {
+      before(async function() {
+        this.channel = await models.Channel.create({
+          title: casual.title,
+          description: casual.short_description,
+          userId: 1,
+        });
+        await models.Member.create({
+          userId: 1,
+          channelId: this.channel.id,
+        });
+      });
       context('user is not the channel owner', function() {
         before(async function() {
           const response = await api.addMembers(
             {
-              channelId: this.channels.zifstarkChlId,
+              channelId: this.channel.id,
               usersIds: ['2'],
             },
             this.tokens.davidToken,
@@ -169,7 +157,7 @@ describe('member', function() {
         before(async function() {
           const response = await api.addMembers(
             {
-              channelId: this.channels.zifstarkChlId,
+              channelId: this.channel.id,
               usersIds: ['2'],
             },
             this.tokens.zifstarkToken,
@@ -181,7 +169,7 @@ describe('member', function() {
                 username: 'ddavids',
               },
               channel: {
-                id: this.channels.zifstarkChlId,
+                id: this.channel.id.toString(),
               },
             },
             {
@@ -189,7 +177,7 @@ describe('member', function() {
                 username: 'zifstark',
               },
               channel: {
-                id: this.channels.zifstarkChlId,
+                id: this.channel.id.toString(),
               },
             },
           ];
@@ -205,7 +193,7 @@ describe('member', function() {
         before(async function() {
           const response = await api.addMembers(
             {
-              channelId: this.channels.zifstarkChlId,
+              channelId: this.channel.id,
               usersIds: ['2'],
             },
             this.tokens.zifstarkToken,
