@@ -27,9 +27,6 @@ const user = (sequelize, DataTypes) => {
         len: [7, 42],
       },
     },
-    roles: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
-    },
   });
 
   User.associate = models => {
