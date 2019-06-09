@@ -24,7 +24,10 @@ export default {
       isAuthenticated,
       isOwner('Channel'),
       async (_parent, { id }, { models }) => {
-        return await models.Channel.destroy({ where: { id } });
+        const count = await models.Channel.destroy({
+          where: { id },
+        });
+        return count > 0;
       },
     ),
     updateChannel: combineResolvers(
