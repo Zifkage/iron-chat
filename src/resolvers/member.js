@@ -51,6 +51,13 @@ export default {
         return members;
       },
     ),
+    removeMembers: combineResolvers(
+      isAuthenticated,
+      isOwner('Channel', 'channelId'),
+      async () => {
+        return null;
+      },
+    ),
   },
   Member: {
     user: async (member, _args, { loaders }) => {

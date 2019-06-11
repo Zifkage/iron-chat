@@ -239,6 +239,25 @@ export const addMembers = async (variables, token) =>
     },
   );
 
+export const removeMembers = async (variables, token) =>
+  await axios.post(
+    API_URL,
+    {
+      query: `
+        mutation($channelId: ID!, $usersIds: [ID!]!) {
+          removeMembers(channelId: $channelId, usersIds: $usersIds) {
+            id
+          }
+        }
+      `,
+      variables,
+    },
+    {
+      headers: {
+        'x-token': token,
+      },
+    },
+  );
 export const members = async (variables, token) =>
   await axios.post(
     API_URL,

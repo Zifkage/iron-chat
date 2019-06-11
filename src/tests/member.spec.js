@@ -29,9 +29,21 @@ describe('member', function() {
       password: 'ddavids',
     });
 
+    const {
+      data: {
+        data: {
+          signIn: { token: billToken },
+        },
+      },
+    } = await api.signIn({
+      login: 'bill',
+      password: 'billbill',
+    });
+
     this.tokens = {
       zifstarkToken,
       davidToken,
+      billToken,
     };
   });
 
@@ -205,6 +217,49 @@ describe('member', function() {
         it('return an error when a user is already a member', function() {
           expect(this.errorMessage).to.eql(
             'Cannot add a member to a channel more than once.',
+          );
+        });
+      });
+    });
+
+    describe('removeMembers(channelId: ID!, usersIds: [ID!]!): [Member!]!', function() {
+      before(async function() {
+        this.channel = await models.Channel.create({
+          userId: 1,
+          title: casual.title,
+          description: casual.short_description,
+        });
+        await models.Member.bulkCreate([
+          {
+            userId: 1,
+            channelId: this.channel.id,
+          },
+          {
+            userId: 2,
+            channelId: this.channel.id,
+          },
+          {
+            userId: 3,
+            channelId: this.channel.id,
+          },
+        ]);
+      });
+
+      context('user is not the owner', function() {
+        before(async function() {
+          const response = await api.removeMembers(
+            {
+              channelId: this.channel.id,
+              usersIds: ['1', '2'],
+            },
+            this.tokens.billToken,
+          );
+          this.errorMessage = response.data.errors[0].message;
+        });
+
+        it('returns an error because only channel owner can remove members', function() {
+          expect(this.errorMessage).to.eql(
+            'Not authenticated as owner.',
           );
         });
       });
