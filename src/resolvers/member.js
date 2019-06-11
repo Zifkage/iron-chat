@@ -54,8 +54,11 @@ export default {
     removeMembers: combineResolvers(
       isAuthenticated,
       isOwner('Channel', 'channelId'),
-      async () => {
-        return null;
+      async (_parent, { channelId, usersIds }, { models }) => {
+        await models.Member.destroy({
+          where: { channelId, userId: usersIds },
+        });
+        return await models.Member.findAll({ where: { channelId } });
       },
     ),
   },

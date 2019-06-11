@@ -246,7 +246,9 @@ export const removeMembers = async (variables, token) =>
       query: `
         mutation($channelId: ID!, $usersIds: [ID!]!) {
           removeMembers(channelId: $channelId, usersIds: $usersIds) {
-            id
+            user {
+              id
+            }
           }
         }
       `,

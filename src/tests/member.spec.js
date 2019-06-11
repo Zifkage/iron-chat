@@ -263,6 +263,25 @@ describe('member', function() {
           );
         });
       });
+
+      context('user is the owner', function() {
+        before(async function() {
+          const response = await api.removeMembers(
+            {
+              channelId: this.channel.id,
+              usersIds: ['2', '3'],
+            },
+            this.tokens.zifstarkToken,
+          );
+          this.removeMembers = response.data.data.removeMembers;
+        });
+
+        it('returns an error because only channel owner can remove members', function() {
+          expect(this.removeMembers).to.deep.equal([
+            { user: { id: '1' } },
+          ]);
+        });
+      });
     });
   });
 });
