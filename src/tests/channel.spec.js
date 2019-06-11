@@ -201,6 +201,22 @@ describe('channel', function() {
   });
 
   context('query', function() {
+    describe('channels(userId: String!): [Channel!]!', function() {
+      context('user is not authenticated', function() {
+        before(async function() {
+          const response = await api.channels({ userId: '1' });
+
+          this.errorMessage = response.data.errors[0].message;
+        });
+
+        it('returns an error because only authenticated user query channel list', function() {
+          expect(this.errorMessage).to.eql(
+            'Not authenticated as user.',
+          );
+        });
+      });
+    });
+
     describe('myChannels(): [Channel!]!', function() {
       context('user is authenticated', function() {
         before(async function() {

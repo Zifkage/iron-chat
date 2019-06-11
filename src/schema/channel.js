@@ -13,6 +13,7 @@ export default gql`
 
   extend type Query {
     myChannels: [Channel!]!
+    channels(userId: ID!): [Channel!]!
   }
 
   type Channel {

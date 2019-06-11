@@ -171,6 +171,31 @@ export const myChannels = async token =>
     },
   );
 
+export const channels = async (variables, token) =>
+  await axios.post(
+    API_URL,
+    {
+      query: `
+          query($userId: ID!) {
+            channels(userId: $userId) {
+              id
+              title
+              description
+              user {
+                username
+              }
+            }
+          }
+        `,
+      variables,
+    },
+    {
+      headers: {
+        'x-token': token || '',
+      },
+    },
+  );
+
 export const updateChannel = async (variables, token) =>
   await axios.post(
     API_URL,

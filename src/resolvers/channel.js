@@ -52,6 +52,7 @@ export default {
         return models.Channel.findAll({ where: { userId: me.id } });
       },
     ),
+    channels: combineResolvers(isAuthenticated, async () => []),
   },
   Channel: {
     user: async (channel, _args, { loaders }) => {
