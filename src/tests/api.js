@@ -182,7 +182,7 @@ export const channels = async (variables, token) =>
               title
               description
               user {
-                username
+                id
               }
             }
           }

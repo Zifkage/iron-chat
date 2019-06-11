@@ -52,7 +52,23 @@ export default {
         return models.Channel.findAll({ where: { userId: me.id } });
       },
     ),
-    channels: combineResolvers(isAuthenticated, async () => []),
+    channels: combineResolvers(
+      isAuthenticated,
+      async (_parent, { userId }, { models }) => {
+        const members = await models.Member.findAll({
+          where: {
+            userId,
+          },
+        });
+
+        const channelsIds = members.map(m => m.channelId);
+
+        const channels = await models.Channel.findAll({
+          where: { id: channelsIds },
+        });
+        return channels;
+      },
+    ),
   },
   Channel: {
     user: async (channel, _args, { loaders }) => {

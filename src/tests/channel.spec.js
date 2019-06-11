@@ -215,6 +215,83 @@ describe('channel', function() {
           );
         });
       });
+
+      context('user is authenticated', function() {
+        before(async function() {
+          await models.Channel.destroy({ where: { userId: 1 } });
+          const channelsSample = [
+            {
+              title: casual.title,
+              description: casual.short_description,
+              userId: 1,
+            },
+            {
+              title: casual.title,
+              description: casual.short_description,
+              userId: 1,
+            },
+            {
+              title: casual.title,
+              description: casual.short_description,
+              userId: 2,
+            },
+            {
+              title: casual.title,
+              description: casual.short_description,
+              userId: 2,
+            },
+          ];
+
+          this.expectedResult = [];
+
+          for (let i = 0; i < channelsSample.length; i++) {
+            const channel = await models.Channel.create(
+              channelsSample[i],
+            );
+
+            this.expectedResult.push({
+              id: channel.id.toString(),
+              title: channelsSample[i].title,
+              description: channelsSample[i].description,
+              user: {
+                id: channelsSample[i].userId.toString(),
+              },
+            });
+
+            if (channelsSample[i].userId === 1) {
+              await models.Member.create({
+                userId: 1,
+                channelId: channel.id,
+              });
+              continue;
+            }
+            await models.Member.bulkCreate([
+              {
+                userId: 1,
+                channelId: channel.id,
+              },
+              {
+                userId: 2,
+                channelId: channel.id,
+              },
+            ]);
+          }
+
+          const {
+            data: {
+              data: { channels },
+            },
+          } = await api.channels(
+            { userId: '1' },
+            this.tokens.zifstarkToken,
+          );
+          this.channels = channels;
+        });
+
+        it('return channel list when they exist', function() {
+          expect(this.channels).to.deep.equal(this.expectedResult);
+        });
+      });
     });
 
     describe('myChannels(): [Channel!]!', function() {
