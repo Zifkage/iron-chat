@@ -283,5 +283,41 @@ describe('member', function() {
         });
       });
     });
+
+    describe('quitChannel(channelId: ID!): Boolean!', function() {
+      before(async function() {
+        this.channel = await models.Channel.create({
+          title: casual.title,
+          description: casual.short_description,
+          userId: 1,
+        });
+
+        await models.Member.bulkCreate([
+          {
+            userId: 1,
+            channelId: this.channel.id,
+          },
+          {
+            userId: 2,
+            channelId: this.channel.id,
+          },
+        ]);
+      });
+
+      context('user is not authenticated', function() {
+        before(async function() {
+          const response = await api.quitChannel({
+            channelId: this.channel.id,
+          });
+          this.errorMessage = response.data.errors[0].message;
+        });
+
+        it('returns an errors', function() {
+          expect(this.errorMessage).to.eql(
+            'Not authenticated as user.',
+          );
+        });
+      });
+    });
   });
 });

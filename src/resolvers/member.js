@@ -61,6 +61,7 @@ export default {
         return await models.Member.findAll({ where: { channelId } });
       },
     ),
+    quitChannel: combineResolvers(isAuthenticated, async () => null),
   },
   Member: {
     user: async (member, _args, { loaders }) => {

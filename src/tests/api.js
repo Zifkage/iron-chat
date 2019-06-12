@@ -284,3 +284,21 @@ export const members = async (variables, token) =>
       },
     },
   );
+
+export const quitChannel = async (variables, token) =>
+  await axios.post(
+    API_URL,
+    {
+      query: `
+          mutation($channelId: ID!) {
+            quitChannel(channelId: $channelId) 
+          }
+        `,
+      variables,
+    },
+    {
+      headers: {
+        'x-token': token || '',
+      },
+    },
+  );

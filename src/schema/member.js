@@ -4,6 +4,7 @@ export default gql`
   extend type Mutation {
     addMembers(channelId: ID!, usersIds: [ID!]!): [Member!]!
     removeMembers(channelId: ID!, usersIds: [ID!]!): [Member!]!
+    quitChannel(channelId: ID!): Boolean!
   }
 
   extend type Query {
