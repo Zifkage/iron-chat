@@ -61,7 +61,15 @@ export default {
         return await models.Member.findAll({ where: { channelId } });
       },
     ),
-    quitChannel: combineResolvers(isAuthenticated, async () => null),
+    quitChannel: combineResolvers(
+      isAuthenticated,
+      async (_parent, { channelId }, { models, me }) => {
+        const count = await models.Member.destroy({
+          where: { channelId, userId: me.id },
+        });
+        return count > 0;
+      },
+    ),
   },
   Member: {
     user: async (member, _args, { loaders }) => {

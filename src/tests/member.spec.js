@@ -318,6 +318,31 @@ describe('member', function() {
           );
         });
       });
+
+      context(
+        'user is authenticated and a channel member',
+        function() {
+          before(async function() {
+            const response = await api.quitChannel(
+              { channelId: this.channel.id },
+              this.tokens.davidToken,
+            );
+            this.members = await models.Member.findAll({
+              where: { channelId: this.channel.id, userId: 2 },
+            });
+
+            this.quitChannel = response.data.data.quitChannel;
+          });
+
+          it('returns true', function() {
+            expect(this.quitChannel).to.be.true;
+          });
+
+          it('the user should not be a channel member anymore', function() {
+            expect(this.members).to.be.empty;
+          });
+        },
+      );
     });
   });
 });
