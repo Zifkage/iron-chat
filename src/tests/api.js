@@ -2,6 +2,38 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:8000/graphql';
 
+// Test helpers
+/*
+  This function provides some authentication tokens to the test suite 
+*/
+export const sampleOfAuthTokens = async test => {
+  let responses = [
+    signIn({
+      login: 'zifstark',
+      password: 'zifstark',
+    }),
+    signIn({
+      login: 'ddavids',
+      password: 'ddavids',
+    }),
+    signIn({
+      login: 'bill',
+      password: 'billbill',
+    }),
+  ];
+
+  responses = await Promise.all(responses);
+  const tokens = responses.map(r => r.data.data.signIn.token);
+
+  test.tokens = {
+    zifstarkToken: tokens[0],
+    davidToken: tokens[1],
+    billToken: tokens[2],
+  };
+};
+
+// user
+
 export const user = async variables =>
   axios.post(API_URL, {
     query: `
@@ -292,6 +324,33 @@ export const quitChannel = async (variables, token) =>
       query: `
           mutation($channelId: ID!) {
             quitChannel(channelId: $channelId) 
+          }
+        `,
+      variables,
+    },
+    {
+      headers: {
+        'x-token': token || '',
+      },
+    },
+  );
+
+// message
+export const createMessage = async (variables, token) =>
+  await axios.post(
+    API_URL,
+    {
+      query: `
+          mutation($channelId: ID!, $text: String!) {
+            createMessage(channelId: $channelId, text: $text) {
+              user {
+                id
+              }
+              channel {
+                id
+              }
+              id
+            }
           }
         `,
       variables,

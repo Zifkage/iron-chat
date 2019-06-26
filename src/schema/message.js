@@ -7,7 +7,7 @@ export default gql`
   }
 
   extend type Mutation {
-    createMessage(text: String!): Message!
+    createMessage(channelId: ID!, text: String!): Message!
     deleteMessage(id: ID!): Boolean!
     updateMessage(id: ID!, text: String!): Boolean!
   }
@@ -27,6 +27,7 @@ export default gql`
     text: String!
     createdAt: Date!
     user: User!
+    channel: Channel!
   }
 
   extend type Subscription {
