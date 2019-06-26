@@ -1,18 +1,16 @@
 import { combineResolvers } from 'graphql-resolvers';
-import { isAuthenticated, isOwner } from './authorization';
+import {
+  isAuthenticated,
+  isOwner,
+  isChannelMember,
+} from './authorization';
 import { ForbiddenError } from 'apollo-server';
 
 export default {
   Query: {
     members: combineResolvers(
-      isAuthenticated,
-      async (_parent, { channelId }, { me, models }) => {
-        const member = await models.Member.findOne({
-          where: { userId: me.id, channelId },
-        });
-        if (!member) {
-          throw new ForbiddenError('Not a channel member.');
-        }
+      isChannelMember,
+      async (_parent, { channelId }, { models }) => {
         const members = await models.Member.findAll({
           where: { channelId },
         });

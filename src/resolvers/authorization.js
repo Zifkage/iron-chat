@@ -27,3 +27,16 @@ export const isOwner = (modelName, idField = 'id') => async (
 
   return skip;
 };
+
+export const isChannelMember = combineResolvers(
+  isAuthenticated,
+  async (_parent, { channelId }, { me, models }) => {
+    const member = await models.Member.findOne({
+      where: { userId: me.id, channelId },
+    });
+    if (!member) {
+      throw new ForbiddenError('Not a channel member.');
+    }
+    return skip;
+  },
+);
