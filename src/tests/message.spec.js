@@ -42,6 +42,26 @@ describe('message', function() {
           );
         });
       });
+
+      context('user is authenticated', function() {
+        context('user is not a channel member', function() {
+          before(async function() {
+            const response = await api.createMessage(
+              {
+                channelId: this.channel.id,
+                text: 'hello world',
+              },
+              this.tokens.davidToken,
+            );
+
+            this.errorMessage = response.data.errors[0].message;
+          });
+
+          it('should returns an error', function() {
+            expect(this.errorMessage).to.eql('Not a channel member.');
+          });
+        });
+      });
     });
   });
 });

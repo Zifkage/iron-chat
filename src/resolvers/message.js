@@ -1,5 +1,6 @@
 import { combineResolvers } from 'graphql-resolvers';
 import { isAuthenticated, isOwner } from './authorization';
+import { ForbiddenError } from 'apollo-server';
 import Sequelize from 'sequelize';
 
 import pubsub, { EVENTS } from '../subscription';
@@ -50,7 +51,13 @@ export default {
   Mutation: {
     createMessage: combineResolvers(
       isAuthenticated,
-      async (_parent, { text }, { me, models }) => {
+      async (_parent, { channelId, text }, { me, models }) => {
+        const member = await models.Member.findOne({
+          where: { userId: me.id, channelId },
+        });
+        if (!member) {
+          throw new ForbiddenError('Not a channel member.');
+        }
         const message = await models.Message.create({
           text,
           userId: me.id,
