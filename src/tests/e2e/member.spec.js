@@ -4,7 +4,7 @@ chai.use(chaiSubset);
 import casual from 'casual';
 
 import * as api from './api';
-import models from '../models';
+import models from '../../models';
 
 describe('member', function() {
   before(async function() {

@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon --exec babel-node src/index.js",
-    "test": "TEST_DATABASE=mytestdatabase mocha --require @babel/register --timeout 20000 'src/**/*.spec.js'",
+    "e2e:test": "TEST_DATABASE=mytestdatabase mocha --require @babel/register --timeout 20000 'src/tests/e2e/**/*.spec.js'",
     "test:watch": "TEST_DATABASE=mytestdatabase mocha --watch --require @babel/register 'src/**/*.spec.js'",
     "test:server": "TEST_DATABASE=mytestdatabase yarn start"
   },
