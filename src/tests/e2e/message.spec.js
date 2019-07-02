@@ -63,27 +63,49 @@ describe('message', function() {
         });
 
         describe('user is a channel member', function() {
-          before(async function() {
-            const response = await api.createMessage(
-              {
-                channelId: this.channel.id,
-                text: 'hello world',
-              },
-              this.tokens.zifstarkToken,
-            );
+          describe('message text is empty', function() {
+            before(async function() {
+              const response = await api.createMessage(
+                {
+                  channelId: this.channel.id,
+                  text: '',
+                },
+                this.tokens.zifstarkToken,
+              );
 
-            this.createMessage = response.data.data.createMessage;
+              this.errorMessage = response.data.errors[0].message;
+            });
+
+            it('should returns the newly created message', function() {
+              expect(this.errorMessage).to.eql(
+                'A message has to have a text.',
+              );
+            });
           });
 
-          it('should returns the newly created message', function() {
-            expect(this.createMessage).to.eql({
-              user: {
-                id: '1',
-              },
-              channel: {
-                id: this.channel.id.toString(),
-              },
-              text: 'hello world',
+          describe('message is valid', function() {
+            before(async function() {
+              const response = await api.createMessage(
+                {
+                  channelId: this.channel.id,
+                  text: 'hello world',
+                },
+                this.tokens.zifstarkToken,
+              );
+
+              this.createMessage = response.data.data.createMessage;
+            });
+
+            it('should returns the newly created message', function() {
+              expect(this.createMessage).to.eql({
+                user: {
+                  id: '1',
+                },
+                channel: {
+                  id: this.channel.id.toString(),
+                },
+                text: 'hello world',
+              });
             });
           });
         });
