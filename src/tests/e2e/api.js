@@ -361,3 +361,22 @@ export const createMessage = async (variables, token) =>
       },
     },
   );
+
+// demand
+export const sendFriendshipDemand = async (variables, token) =>
+  await axios.post(
+    API_URL,
+    {
+      query: `
+          mutation($userId: ID!) {
+            sendFriendshipDemand(userId: $userId) 
+          }
+        `,
+      variables,
+    },
+    {
+      headers: {
+        'x-token': token || '',
+      },
+    },
+  );
