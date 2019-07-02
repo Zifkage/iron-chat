@@ -44,7 +44,7 @@ describe('message', function() {
       });
 
       context('user is authenticated', function() {
-        context('user is not a channel member', function() {
+        describe('user is not a channel member', function() {
           before(async function() {
             const response = await api.createMessage(
               {

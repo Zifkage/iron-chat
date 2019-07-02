@@ -8,30 +8,7 @@ import models from '../../models';
 
 describe('channel', function() {
   before(async function() {
-    const {
-      data: {
-        data: {
-          signIn: { token: zifstarkToken },
-        },
-      },
-    } = await api.signIn({
-      login: 'zifstark',
-      password: 'zifstark',
-    });
-    const {
-      data: {
-        data: {
-          signIn: { token: davidToken },
-        },
-      },
-    } = await api.signIn({
-      login: 'ddavids',
-      password: 'ddavids',
-    });
-    this.tokens = {
-      zifstarkToken,
-      davidToken,
-    };
+    await api.sampleOfAuthTokens(this);
   });
 
   context('mutation', function() {

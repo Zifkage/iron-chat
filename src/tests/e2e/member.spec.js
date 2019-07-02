@@ -8,43 +8,7 @@ import models from '../../models';
 
 describe('member', function() {
   before(async function() {
-    const {
-      data: {
-        data: {
-          signIn: { token: zifstarkToken },
-        },
-      },
-    } = await api.signIn({
-      login: 'zifstark',
-      password: 'zifstark',
-    });
-    const {
-      data: {
-        data: {
-          signIn: { token: davidToken },
-        },
-      },
-    } = await api.signIn({
-      login: 'ddavids',
-      password: 'ddavids',
-    });
-
-    const {
-      data: {
-        data: {
-          signIn: { token: billToken },
-        },
-      },
-    } = await api.signIn({
-      login: 'bill',
-      password: 'billbill',
-    });
-
-    this.tokens = {
-      zifstarkToken,
-      davidToken,
-      billToken,
-    };
+    await api.sampleOfAuthTokens(this);
   });
 
   describe('query', function() {
