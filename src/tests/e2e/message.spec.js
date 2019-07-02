@@ -61,6 +61,32 @@ describe('message', function() {
             expect(this.errorMessage).to.eql('Not a channel member.');
           });
         });
+
+        describe('user is a channel member', function() {
+          before(async function() {
+            const response = await api.createMessage(
+              {
+                channelId: this.channel.id,
+                text: 'hello world',
+              },
+              this.tokens.zifstarkToken,
+            );
+
+            this.createMessage = response.data.data.createMessage;
+          });
+
+          it('should returns the newly created message', function() {
+            expect(this.createMessage).to.eql({
+              user: {
+                id: '1',
+              },
+              channel: {
+                id: this.channel.id.toString(),
+              },
+              text: 'hello world',
+            });
+          });
+        });
       });
     });
   });

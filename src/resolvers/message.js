@@ -4,10 +4,7 @@ import {
   isOwner,
   isChannelMember,
 } from './authorization';
-import { ForbiddenError } from 'apollo-server';
 import Sequelize from 'sequelize';
-
-import pubsub, { EVENTS } from '../subscription';
 
 const toCursorHash = string => Buffer.from(string).toString('base64');
 const fromCursorHash = string =>
@@ -56,16 +53,11 @@ export default {
     createMessage: combineResolvers(
       isChannelMember,
       async (_parent, { channelId, text }, { me, models }) => {
-        const message = await models.Message.create({
+        return await models.Message.create({
           text,
           userId: me.id,
+          channelId,
         });
-
-        pubsub.publish(EVENTS.MESSAGE.CREATED, {
-          messageCreated: { message },
-        });
-
-        return message;
       },
     ),
     deleteMessage: combineResolvers(
@@ -88,6 +80,9 @@ export default {
   Message: {
     user: async (message, _args, { loaders }) => {
       return await loaders.user.load(message.userId);
+    },
+    channel: async (message, _arg, { loaders }) => {
+      return await loaders.channel.load(message.channelId);
     },
   },
   Subscription: {

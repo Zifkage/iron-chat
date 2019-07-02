@@ -349,7 +349,7 @@ export const createMessage = async (variables, token) =>
               channel {
                 id
               }
-              id
+              text
             }
           }
         `,
