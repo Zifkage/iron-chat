@@ -251,8 +251,8 @@ export const addMembers = async (variables, token) =>
     API_URL,
     {
       query: `
-        mutation($channelId: ID!, $usersIds: [ID!]!) {
-          addMembers(channelId: $channelId, usersIds: $usersIds) {
+        mutation($channelId: ID!, $userIds: [ID!]!) {
+          addMembers(channelId: $channelId, userIds: $userIds) {
             user {
               username
             }
@@ -276,8 +276,8 @@ export const removeMembers = async (variables, token) =>
     API_URL,
     {
       query: `
-        mutation($channelId: ID!, $usersIds: [ID!]!) {
-          removeMembers(channelId: $channelId, usersIds: $usersIds) {
+        mutation($channelId: ID!, $userIds: [ID!]!) {
+          removeMembers(channelId: $channelId, userIds: $userIds) {
             user {
               id
             }

@@ -134,7 +134,7 @@ describe('member', function() {
   });
 
   describe('mutation', function() {
-    describe('addMembers(channelId: ID!, usersIds: [ID!]!) : [Member!]!', function() {
+    describe('addMembers(channelId: ID!, userIds: [ID!]!) : [Member!]!', function() {
       before(async function() {
         this.channel = await models.Channel.create({
           title: casual.title,
@@ -151,7 +151,7 @@ describe('member', function() {
           const response = await api.addMembers(
             {
               channelId: this.channel.id,
-              usersIds: ['2'],
+              userIds: ['2'],
             },
             this.tokens.davidToken,
           );
@@ -170,7 +170,7 @@ describe('member', function() {
           const response = await api.addMembers(
             {
               channelId: this.channel.id,
-              usersIds: ['2'],
+              userIds: ['2'],
             },
             this.tokens.zifstarkToken,
           );
@@ -206,7 +206,7 @@ describe('member', function() {
           const response = await api.addMembers(
             {
               channelId: this.channel.id,
-              usersIds: ['2'],
+              userIds: ['2'],
             },
             this.tokens.zifstarkToken,
           );
@@ -222,7 +222,7 @@ describe('member', function() {
       });
     });
 
-    describe('removeMembers(channelId: ID!, usersIds: [ID!]!): [Member!]!', function() {
+    describe('removeMembers(channelId: ID!, userIds: [ID!]!): [Member!]!', function() {
       before(async function() {
         this.channel = await models.Channel.create({
           userId: 1,
@@ -250,7 +250,7 @@ describe('member', function() {
           const response = await api.removeMembers(
             {
               channelId: this.channel.id,
-              usersIds: ['1', '2'],
+              userIds: ['1', '2'],
             },
             this.tokens.billToken,
           );
@@ -269,7 +269,7 @@ describe('member', function() {
           const response = await api.removeMembers(
             {
               channelId: this.channel.id,
-              usersIds: ['2', '3'],
+              userIds: ['2', '3'],
             },
             this.tokens.zifstarkToken,
           );

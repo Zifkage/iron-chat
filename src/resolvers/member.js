@@ -22,12 +22,12 @@ export default {
     addMembers: combineResolvers(
       isAuthenticated,
       isOwner('Channel', 'channelId'),
-      async (_parent, { channelId, usersIds }, { models }) => {
+      async (_parent, { channelId, userIds }, { models }) => {
         const membersToAdd = [];
         const existingMembers = await models.Member.findAll({
           where: {
             channelId,
-            userId: usersIds,
+            userId: userIds,
           },
         });
         if (existingMembers.length > 0) {
@@ -35,7 +35,7 @@ export default {
             'Cannot add a member to a channel more than once.',
           );
         }
-        usersIds.forEach(userId => {
+        userIds.forEach(userId => {
           membersToAdd.push({
             channelId,
             userId,
@@ -52,9 +52,9 @@ export default {
     removeMembers: combineResolvers(
       isAuthenticated,
       isOwner('Channel', 'channelId'),
-      async (_parent, { channelId, usersIds }, { models }) => {
+      async (_parent, { channelId, userIds }, { models }) => {
         await models.Member.destroy({
-          where: { channelId, userId: usersIds },
+          where: { channelId, userId: userIds },
         });
         return await models.Member.findAll({ where: { channelId } });
       },
