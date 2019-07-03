@@ -3,6 +3,7 @@ import chaiSubset from 'chai-subset';
 chai.use(chaiSubset);
 
 import * as api from './api';
+import models from '../../models';
 
 describe('demand', function() {
   before(async function() {
@@ -23,6 +24,27 @@ describe('demand', function() {
           expect(this.errorMessage).to.eql(
             'Not authenticated as user.',
           );
+        });
+      });
+
+      describe('user is authenticated', function() {
+        describe('the receiver does not exist', function() {
+          before(async function() {
+            const response = await api.sendFriendshipDemand(
+              {
+                userId: 200,
+              },
+              this.tokens.zifstarkToken,
+            );
+
+            this.errorMessage = response.data.errors[0].message;
+          });
+
+          it('should create a demand database', function() {
+            expect(this.errorMessage).to.eql(
+              'The receiver does not exist.',
+            );
+          });
         });
       });
     });
