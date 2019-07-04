@@ -11,6 +11,7 @@ export default {
         const demands = await models.Demand.findAll({
           where: {
             to: me.id,
+            accepted: false,
           },
         });
         if (!demands) {
