@@ -80,4 +80,24 @@ describe('demand', function() {
       });
     });
   });
+
+  describe('query', function() {
+    describe('friendshipDemandsReceived(): [Demand!]!', function() {
+      context('user is authenticated', function() {
+        describe('user did not receive any demand', function() {
+          before(async function() {
+            const response = await api.friendshipDemandsReceived(
+              this.tokens.zifstarkToken,
+            );
+            this.friendshipDemandsReceived =
+              response.data.data.friendshipDemandsReceived;
+          });
+
+          it('should returns an empty array', function() {
+            expect(this.friendshipDemandsReceived).to.be.empty;
+          });
+        });
+      });
+    });
+  });
 });

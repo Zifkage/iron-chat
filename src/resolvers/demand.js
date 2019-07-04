@@ -4,6 +4,12 @@ import { isAuthenticated } from './authorization';
 import { UserInputError } from 'apollo-server';
 
 export default {
+  Query: {
+    friendshipDemandsReceived: combineResolvers(
+      isAuthenticated,
+      async (_parent, _args, { me }) => [],
+    ),
+  },
   Mutation: {
     sendFriendshipDemand: combineResolvers(
       isAuthenticated,
