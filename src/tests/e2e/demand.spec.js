@@ -46,6 +46,37 @@ describe('demand', function() {
             );
           });
         });
+        describe('the receiver exist', function() {
+          before(async function() {
+            const response = await api.sendFriendshipDemand(
+              {
+                userId: 2,
+              },
+              this.tokens.zifstarkToken,
+            );
+            this.demand = await models.Demand.findOne({
+              where: {
+                from: 1,
+                to: 2,
+              },
+            });
+
+            this.sendFriendshipDemand =
+              response.data.data.sendFriendshipDemand;
+          });
+
+          it('should create a demand', function() {
+            expect(this.demand).to.containSubset({
+              from: 1,
+              to: 2,
+              accepted: false,
+            });
+          });
+
+          it('return true', function() {
+            expect(this.sendFriendshipDemand).to.be.true;
+          });
+        });
       });
     });
   });

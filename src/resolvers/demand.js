@@ -7,7 +7,7 @@ export default {
   Mutation: {
     sendFriendshipDemand: combineResolvers(
       isAuthenticated,
-      async (_parent, { userId }, { models }) => {
+      async (_parent, { userId }, { models, me }) => {
         const receiver = await models.User.findOne({
           where: { id: userId },
         });
@@ -16,6 +16,11 @@ export default {
             invalidArgs: ['userId'],
           });
         }
+        await models.Demand.create({
+          from: me.id,
+          to: userId,
+        });
+        return true;
       },
     ),
   },
