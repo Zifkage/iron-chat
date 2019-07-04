@@ -7,7 +7,17 @@ export default {
   Query: {
     friendshipDemandsReceived: combineResolvers(
       isAuthenticated,
-      async (_parent, _args, { me }) => [],
+      async (_parent, _args, { me, models }) => {
+        const demands = await models.Demand.findAll({
+          where: {
+            to: me.id,
+          },
+        });
+        if (!demands) {
+          return [];
+        }
+        return demands;
+      },
     ),
   },
   Mutation: {
@@ -29,5 +39,13 @@ export default {
         return true;
       },
     ),
+  },
+  Demand: {
+    from: async (demand, _args, { models }) => {
+      return await models.User.findByPk(demand.from);
+    },
+    to: async (demand, _args, { models }) => {
+      return await models.User.findByPk(demand.to);
+    },
   },
 };

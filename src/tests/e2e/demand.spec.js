@@ -97,6 +97,42 @@ describe('demand', function() {
             expect(this.friendshipDemandsReceived).to.be.empty;
           });
         });
+
+        describe('user recieved two demand', function() {
+          before(async function() {
+            await models.Demand.bulkCreate([
+              {
+                from: 2,
+                to: 1,
+              },
+              {
+                from: 3,
+                to: 1,
+              },
+            ]);
+
+            const response = await api.friendshipDemandsReceived(
+              this.tokens.zifstarkToken,
+            );
+            this.friendshipDemandsReceived =
+              response.data.data.friendshipDemandsReceived;
+          });
+
+          it('should returns an array of demands', function() {
+            expect(this.friendshipDemandsReceived).to.deep.equal([
+              {
+                from: { id: '2' },
+                to: { id: '1' },
+                accepted: false,
+              },
+              {
+                from: { id: '3' },
+                to: { id: '1' },
+                accepted: false,
+              },
+            ]);
+          });
+        });
       });
     });
   });
