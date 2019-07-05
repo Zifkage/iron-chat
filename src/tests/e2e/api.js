@@ -381,13 +381,13 @@ export const sendFriendshipDemand = async (variables, token) =>
     },
   );
 
-export const friendshipDemandsReceived = async token =>
+export const friendshipDemands = async (variables, token) =>
   await axios.post(
     API_URL,
     {
       query: `
-          query {
-            friendshipDemandsReceived {
+          query($filter: String!) {
+            friendshipDemands(filter: $filter) {
               from {
                 id
               }
@@ -398,31 +398,7 @@ export const friendshipDemandsReceived = async token =>
             } 
           }
         `,
-    },
-    {
-      headers: {
-        'x-token': token || '',
-      },
-    },
-  );
-
-export const friendshipDemandsSent = async token =>
-  await axios.post(
-    API_URL,
-    {
-      query: `
-          query {
-            friendshipDemandsSent {
-              from {
-                id
-              }
-              to {
-                id
-              }
-              accepted
-            } 
-          }
-        `,
+      variables,
     },
     {
       headers: {

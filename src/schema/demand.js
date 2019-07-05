@@ -5,8 +5,7 @@ export default gql`
     sendFriendshipDemand(userId: ID!): Boolean!
   }
   extend type Query {
-    friendshipDemandsReceived: [Demand!]!
-    friendshipDemandsSent: [Demand!]!
+    friendshipDemands(filter: String!): [Demand!]!
   }
   type Demand {
     id: ID!

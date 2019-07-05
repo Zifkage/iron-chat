@@ -82,19 +82,20 @@ describe('demand', function() {
   });
 
   describe('query', function() {
-    describe('friendshipDemandsReceived(): [Demand!]!', function() {
+    describe('friendshipDemands(filter: "recieved"): [Demand!]!', function() {
       context('user is authenticated', function() {
         describe('user did not receive any demand', function() {
           before(async function() {
-            const response = await api.friendshipDemandsReceived(
+            const response = await api.friendshipDemands(
+              { filter: 'received' },
               this.tokens.zifstarkToken,
             );
-            this.friendshipDemandsReceived =
-              response.data.data.friendshipDemandsReceived;
+            this.friendshipDemands =
+              response.data.data.friendshipDemands;
           });
 
           it('should returns an empty array', function() {
-            expect(this.friendshipDemandsReceived).to.be.empty;
+            expect(this.friendshipDemands).to.be.empty;
           });
         });
 
@@ -111,15 +112,16 @@ describe('demand', function() {
               },
             ]);
 
-            const response = await api.friendshipDemandsReceived(
+            const response = await api.friendshipDemands(
+              { filter: 'received' },
               this.tokens.zifstarkToken,
             );
-            this.friendshipDemandsReceived =
-              response.data.data.friendshipDemandsReceived;
+            this.friendshipDemands =
+              response.data.data.friendshipDemands;
           });
 
           it('should returns an array of demands', function() {
-            expect(this.friendshipDemandsReceived).to.deep.equal([
+            expect(this.friendshipDemands).to.deep.equal([
               {
                 from: { id: '2' },
                 to: { id: '1' },
@@ -136,7 +138,7 @@ describe('demand', function() {
       });
     });
 
-    describe('friendshipDemandsSent(): [Demand!]!', function() {
+    describe('friendshipDemands(): [Demand!]!', function() {
       context('user is authenticated', function() {
         describe('user did not send any demand', function() {
           before(async function() {
@@ -145,15 +147,16 @@ describe('demand', function() {
                 from: 1,
               },
             });
-            const response = await api.friendshipDemandsSent(
+            const response = await api.friendshipDemands(
+              { filter: 'sent' },
               this.tokens.zifstarkToken,
             );
-            this.friendshipDemandsSent =
-              response.data.data.friendshipDemandsSent;
+            this.friendshipDemands =
+              response.data.data.friendshipDemands;
           });
 
           it('should returns an empty array', function() {
-            expect(this.friendshipDemandsSent).to.be.empty;
+            expect(this.friendshipDemands).to.be.empty;
           });
         });
 
@@ -175,15 +178,16 @@ describe('demand', function() {
               },
             ]);
 
-            const response = await api.friendshipDemandsSent(
+            const response = await api.friendshipDemands(
+              { filter: 'sent' },
               this.tokens.billToken,
             );
-            this.friendshipDemandsSent =
-              response.data.data.friendshipDemandsSent;
+            this.friendshipDemands =
+              response.data.data.friendshipDemands;
           });
 
           it('should returns an array of demands', function() {
-            expect(this.friendshipDemandsSent).to.deep.equal([
+            expect(this.friendshipDemands).to.deep.equal([
               {
                 from: { id: '3' },
                 to: { id: '1' },

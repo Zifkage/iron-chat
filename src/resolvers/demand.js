@@ -5,27 +5,12 @@ import { UserInputError } from 'apollo-server';
 
 export default {
   Query: {
-    friendshipDemandsReceived: combineResolvers(
+    friendshipDemands: combineResolvers(
       isAuthenticated,
-      async (_parent, _args, { me, models }) => {
+      async (_parent, { filter }, { me, models }) => {
         const demands = await models.Demand.findAll({
           where: {
-            to: me.id,
-            accepted: false,
-          },
-        });
-        if (!demands) {
-          return [];
-        }
-        return demands;
-      },
-    ),
-    friendshipDemandsSent: combineResolvers(
-      isAuthenticated,
-      async (_parent, _args, { me, models }) => {
-        const demands = await models.Demand.findAll({
-          where: {
-            from: me.id,
+            [filter == 'sent' ? 'from' : 'to']: me.id,
             accepted: false,
           },
         });
