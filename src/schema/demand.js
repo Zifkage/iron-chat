@@ -6,6 +6,7 @@ export default gql`
   }
   extend type Query {
     friendshipDemandsReceived: [Demand!]!
+    friendshipDemandsSent: [Demand!]!
   }
   type Demand {
     id: ID!

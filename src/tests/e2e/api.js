@@ -405,3 +405,28 @@ export const friendshipDemandsReceived = async token =>
       },
     },
   );
+
+export const friendshipDemandsSent = async token =>
+  await axios.post(
+    API_URL,
+    {
+      query: `
+          query {
+            friendshipDemandsSent {
+              from {
+                id
+              }
+              to {
+                id
+              }
+              accepted
+            } 
+          }
+        `,
+    },
+    {
+      headers: {
+        'x-token': token || '',
+      },
+    },
+  );

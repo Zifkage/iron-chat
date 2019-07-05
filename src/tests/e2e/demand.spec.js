@@ -135,5 +135,23 @@ describe('demand', function() {
         });
       });
     });
+
+    describe('friendshipDemandsSent(): [Demand!]!', function() {
+      context('user is authenticated', function() {
+        describe('user did not send any demand', function() {
+          before(async function() {
+            const response = await api.friendshipDemandsSent(
+              this.tokens.zifstarkToken,
+            );
+            this.friendshipDemandsSent =
+              response.data.data.friendshipDemandsSent;
+          });
+
+          it('should returns an empty array', function() {
+            expect(this.friendshipDemandsSent).to.be.empty;
+          });
+        });
+      });
+    });
   });
 });

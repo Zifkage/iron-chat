@@ -20,6 +20,10 @@ export default {
         return demands;
       },
     ),
+    friendshipDemandsSent: combineResolvers(
+      isAuthenticated,
+      async () => [],
+    ),
   },
   Mutation: {
     sendFriendshipDemand: combineResolvers(
