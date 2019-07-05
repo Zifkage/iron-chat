@@ -79,6 +79,26 @@ describe('demand', function() {
         });
       });
     });
+
+    describe('acceptFriendshipDemand(demandId: ID!): Boolean!', function() {
+      context('user is authenticated', function() {
+        describe('the demand does not exist', function() {
+          before(async function() {
+            const response = await api.acceptFriendshipDemand(
+              { demandId: 200 },
+              this.tokens.zifstarkToken,
+            );
+            this.errorMessage = response.data.errors[0].message;
+          });
+
+          it('returns an error', function() {
+            expect(this.errorMessage).to.eql(
+              'The demand does not exist.',
+            );
+          });
+        });
+      });
+    });
   });
 
   describe('query', function() {

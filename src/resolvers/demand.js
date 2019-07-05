@@ -40,6 +40,18 @@ export default {
         return true;
       },
     ),
+    acceptFriendshipDemand: combineResolvers(
+      isAuthenticated,
+      async (_parent, { demandId }, { models }) => {
+        const demand = await models.Demand.findByPk(demandId);
+        if (!demand) {
+          throw new UserInputError('The demand does not exist.', {
+            invalidArgs: ['demandId'],
+          });
+        }
+        return null;
+      },
+    ),
   },
   Demand: {
     from: async (demand, _args, { models }) => {
