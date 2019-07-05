@@ -22,7 +22,18 @@ export default {
     ),
     friendshipDemandsSent: combineResolvers(
       isAuthenticated,
-      async () => [],
+      async (_parent, _args, { me, models }) => {
+        const demands = await models.Demand.findAll({
+          where: {
+            from: me.id,
+            accepted: false,
+          },
+        });
+        if (!demands) {
+          return [];
+        }
+        return demands;
+      },
     ),
   },
   Mutation: {

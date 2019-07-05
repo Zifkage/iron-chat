@@ -140,6 +140,11 @@ describe('demand', function() {
       context('user is authenticated', function() {
         describe('user did not send any demand', function() {
           before(async function() {
+            await models.Demand.destroy({
+              where: {
+                from: 1,
+              },
+            });
             const response = await api.friendshipDemandsSent(
               this.tokens.zifstarkToken,
             );
@@ -149,6 +154,47 @@ describe('demand', function() {
 
           it('should returns an empty array', function() {
             expect(this.friendshipDemandsSent).to.be.empty;
+          });
+        });
+
+        describe('user sent two demand', function() {
+          before(async function() {
+            await models.Demand.destroy({
+              where: {
+                from: 3,
+              },
+            });
+            await models.Demand.bulkCreate([
+              {
+                from: 3,
+                to: 1,
+              },
+              {
+                from: 3,
+                to: 2,
+              },
+            ]);
+
+            const response = await api.friendshipDemandsSent(
+              this.tokens.billToken,
+            );
+            this.friendshipDemandsSent =
+              response.data.data.friendshipDemandsSent;
+          });
+
+          it('should returns an array of demands', function() {
+            expect(this.friendshipDemandsSent).to.deep.equal([
+              {
+                from: { id: '3' },
+                to: { id: '1' },
+                accepted: false,
+              },
+              {
+                from: { id: '3' },
+                to: { id: '2' },
+                accepted: false,
+              },
+            ]);
           });
         });
       });
