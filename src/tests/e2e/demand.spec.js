@@ -138,7 +138,7 @@ describe('demand', function() {
       });
     });
 
-    describe('friendshipDemands(): [Demand!]!', function() {
+    describe('friendshipDemands(filter: "sent"): [Demand!]!', function() {
       context('user is authenticated', function() {
         describe('user did not send any demand', function() {
           before(async function() {
