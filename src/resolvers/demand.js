@@ -1,7 +1,11 @@
 import { combineResolvers } from 'graphql-resolvers';
 
 import { isAuthenticated } from './authorization';
-import { UserInputError, ForbiddenError } from 'apollo-server';
+import {
+  UserInputError,
+  ForbiddenError,
+  ApolloError,
+} from 'apollo-server';
 
 export default {
   Query: {
@@ -43,7 +47,9 @@ export default {
     acceptFriendshipDemand: combineResolvers(
       isAuthenticated,
       async (_parent, { demandId }, { models, me }) => {
-        const demand = await models.Demand.findByPk(demandId);
+        const demand = await models.Demand.findOne({
+          where: { id: demandId },
+        });
         if (!demand) {
           throw new UserInputError('The demand does not exist.', {
             invalidArgs: ['demandId'],
@@ -52,7 +58,34 @@ export default {
         if (demand.to !== me.id) {
           throw new ForbiddenError('Not authenticated as owner.');
         }
-        return null;
+        const result = await models.Demand.update(
+          { accepted: true },
+          {
+            where: {
+              id: demandId,
+            },
+          },
+        );
+        if (result[0] !== 1) {
+          throw new ApolloError('Internal Server Error.');
+        }
+        // The demand is accepted
+        // Makes the sender and the receiver friend
+        try {
+          await models.Friendship.bulkCreate([
+            {
+              userId: demand.from,
+              friendId: demand.to,
+            },
+            {
+              userId: demand.to,
+              friendId: demand.from,
+            },
+          ]);
+        } catch (e) {
+          console.error(e);
+        }
+        return true;
       },
     ),
   },

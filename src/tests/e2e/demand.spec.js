@@ -1,6 +1,7 @@
 import chai, { expect } from 'chai';
 import chaiSubset from 'chai-subset';
 chai.use(chaiSubset);
+import { Op } from 'sequelize';
 
 import * as api from './api';
 import models from '../../models';
@@ -117,6 +118,54 @@ describe('demand', function() {
             expect(this.errorMessage).to.eql(
               'Not authenticated as owner.',
             );
+          });
+        });
+
+        describe('the user is the receiver', function() {
+          before(async function() {
+            const demand = await models.Demand.create({
+              from: 2,
+              to: 1,
+            });
+            const response = await api.acceptFriendshipDemand(
+              {
+                demandId: demand.id,
+              },
+              this.tokens.zifstarkToken,
+            );
+            this.demand = await models.Demand.findByPk(demand.id);
+            this.friendships = await models.Friendship.findAll({
+              where: {
+                [Op.or]: [
+                  { userId: 1, friendId: 2 },
+                  { userId: 2, friendId: 1 },
+                ],
+              },
+            });
+            this.acceptFriendshipDemand =
+              response.data.data.acceptFriendshipDemand;
+          });
+
+          it('should return true', function() {
+            expect(this.acceptFriendshipDemand).to.be.true;
+          });
+
+          it('the demand.accepted should be true', function() {
+            expect(this.demand.accepted).to.be.true;
+          });
+
+          it('the sender and the receiver should be friend', function() {
+            expect(this.friendships).to.have.lengthOf(2);
+            expect(this.friendships).to.containSubset([
+              {
+                userId: 1,
+                friendId: 2,
+              },
+              {
+                userId: 2,
+                friendId: 1,
+              },
+            ]);
           });
         });
       });
