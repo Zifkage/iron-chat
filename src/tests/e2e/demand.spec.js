@@ -97,6 +97,28 @@ describe('demand', function() {
             );
           });
         });
+        describe('the user is not the receiver', function() {
+          before(async function() {
+            const demand = await models.Demand.create({
+              from: 2,
+              to: 3,
+            });
+            const response = await api.acceptFriendshipDemand(
+              {
+                demandId: demand.id,
+              },
+              this.tokens.zifstarkToken,
+            );
+
+            this.errorMessage = response.data.errors[0].message;
+          });
+
+          it('should returns an error', function() {
+            expect(this.errorMessage).to.eql(
+              'Not authenticated as owner.',
+            );
+          });
+        });
       });
     });
   });
@@ -121,6 +143,7 @@ describe('demand', function() {
 
         describe('user recieved two demand', function() {
           before(async function() {
+            await models.Demand.destroy({ where: { to: 1 } });
             await models.Demand.bulkCreate([
               {
                 from: 2,

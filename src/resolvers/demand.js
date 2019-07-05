@@ -1,7 +1,7 @@
 import { combineResolvers } from 'graphql-resolvers';
 
 import { isAuthenticated } from './authorization';
-import { UserInputError } from 'apollo-server';
+import { UserInputError, ForbiddenError } from 'apollo-server';
 
 export default {
   Query: {
@@ -42,12 +42,15 @@ export default {
     ),
     acceptFriendshipDemand: combineResolvers(
       isAuthenticated,
-      async (_parent, { demandId }, { models }) => {
+      async (_parent, { demandId }, { models, me }) => {
         const demand = await models.Demand.findByPk(demandId);
         if (!demand) {
           throw new UserInputError('The demand does not exist.', {
             invalidArgs: ['demandId'],
           });
+        }
+        if (demand.to !== me.id) {
+          throw new ForbiddenError('Not authenticated as owner.');
         }
         return null;
       },
