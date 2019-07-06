@@ -3,6 +3,7 @@ import { gql } from 'apollo-server-express';
 export default gql`
   extend type Query {
     users: [User!]
+    searchUser(term: String!): [UserSearchItem!]!
     user(id: ID!): User
     me: User
   }
@@ -27,5 +28,10 @@ export default gql`
     email: String!
     roles: [String!]!
     messages: [Message!]
+  }
+
+  type UserSearchItem {
+    user: User!
+    isFriend: Boolean!
   }
 `;

@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken';
 import { combineResolvers } from 'graphql-resolvers';
 import { AuthenticationError, UserInputError } from 'apollo-server';
+import { Op } from 'sequelize';
 
-import { isAdmin } from './authorization';
+import { isAuthenticated, isAdmin } from './authorization';
 
 const createToken = async (user, secret, expiresIn) => {
   const { id, email, username, roles } = user;
@@ -25,6 +26,43 @@ export default {
       }
       return await models.User.findByPk(me.id);
     },
+    searchUser: combineResolvers(
+      isAuthenticated,
+      async (_parent, { term }, { models, me }) => {
+        const users = await models.User.findAll({
+          where: {
+            id: {
+              [Op.notIn]: [me.id],
+            },
+            username: {
+              [Op.substring]: term,
+            },
+          },
+        });
+        if (!users) return [];
+        const userIds = users.map(u => u.id);
+
+        // Check if a frienship exist between the current user and the seached users
+        const friendships = await models.Friendship.findAll({
+          where: {
+            userId: me.id,
+            friendId: {
+              [Op.in]: userIds,
+            },
+          },
+        });
+        const userSearchItems = users.map(u => {
+          const friendshipIndex = friendships.findIndex(
+            f => f.friendId === u.id,
+          );
+          return {
+            user: u,
+            isFriend: friendshipIndex !== -1 ? true : false,
+          };
+        });
+        return userSearchItems;
+      },
+    ),
   },
   Mutation: {
     signUp: async (
