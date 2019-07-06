@@ -170,6 +170,37 @@ describe('demand', function() {
         });
       });
     });
+
+    describe('rejectFriendshipDemand(demandId: ID!): Boolean!', function() {
+      context('user is authenticated', function() {
+        describe('the user is the receiver', function() {
+          before(async function() {
+            const demand = await models.Demand.create({
+              from: 2,
+              to: 1,
+            });
+            const response = await api.rejectFriendshipDemand(
+              {
+                demandId: demand.id,
+              },
+              this.tokens.zifstarkToken,
+            );
+            this.demand = await models.Demand.findByPk(demand.id);
+
+            this.rejectFriendshipDemand =
+              response.data.data.rejectFriendshipDemand;
+          });
+
+          it('should return true', function() {
+            expect(this.rejectFriendshipDemand).to.be.true;
+          });
+
+          it('the demand should be removed', function() {
+            expect(this.demand).to.be.null;
+          });
+        });
+      });
+    });
   });
 
   describe('query', function() {

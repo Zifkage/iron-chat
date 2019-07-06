@@ -88,6 +88,28 @@ export default {
         return true;
       },
     ),
+    rejectFriendshipDemand: combineResolvers(
+      isAuthenticated,
+      async (_parent, { demandId }, { models, me }) => {
+        const demand = await models.Demand.findOne({
+          where: { id: demandId },
+        });
+        if (!demand) {
+          throw new UserInputError('The demand does not exist.', {
+            invalidArgs: ['demandId'],
+          });
+        }
+        if (demand.to !== me.id) {
+          throw new ForbiddenError('Not authenticated as owner.');
+        }
+        await models.Demand.destroy({
+          where: {
+            id: demandId,
+          },
+        });
+        return true;
+      },
+    ),
   },
   Demand: {
     from: async (demand, _args, { models }) => {

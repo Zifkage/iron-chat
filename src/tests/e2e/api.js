@@ -424,3 +424,21 @@ export const acceptFriendshipDemand = async (variables, token) =>
       },
     },
   );
+
+export const rejectFriendshipDemand = async (variables, token) =>
+  await axios.post(
+    API_URL,
+    {
+      query: `
+          mutation($demandId: ID!) {
+            rejectFriendshipDemand(demandId: $demandId)
+          }
+        `,
+      variables,
+    },
+    {
+      headers: {
+        'x-token': token || '',
+      },
+    },
+  );
