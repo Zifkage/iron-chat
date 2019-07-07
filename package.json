@@ -4,10 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --exec babel-node src/index.js",
+    "start": "babel-node src/index.js",
+    "watch": "nodemon --exec babel-node src/index.js",
     "e2e:test": "TEST_DATABASE=mytestdatabase mocha --require @babel/register --timeout 20000 'src/tests/e2e/**/*.spec.js'",
     "test:watch": "TEST_DATABASE=mytestdatabase mocha --watch --require @babel/register 'src/**/*.spec.js'",
-    "test:server": "TEST_DATABASE=mytestdatabase yarn start"
+    "test:server": "TEST_DATABASE=mytestdatabase SERVER_PORT=8000 yarn watch"
   },
   "keywords": [],
   "author": "",

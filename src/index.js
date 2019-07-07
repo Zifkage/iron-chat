@@ -93,9 +93,16 @@ sequelize.sync({ force: isTest }).then(async () => {
     createUsers();
   }
 
-  httpServer.listen({ port: 8000 }, () => {
-    console.log('Apollo Server on http://localhost:8000/graphql');
-  });
+  const listener = httpServer.listen(
+    { port: process.env.SERVER_PORT || 8080 },
+    () => {
+      console.log(
+        `Apollo Server on http://localhost:${
+          listener.address().port
+        }/graphql`,
+      );
+    },
+  );
 });
 
 const createUsers = async () => {
