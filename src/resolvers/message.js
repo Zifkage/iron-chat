@@ -9,14 +9,8 @@ import {
 export default {
   Query: {
     channelMessages: combineResolvers(
-      isAuthenticated,
-      async (_parent, { channelId }, { models }) => {
-        const channel = await models.Channel.findByPk(channelId);
-        if (!channel)
-          throw new UserInputError('This channel does not exist.', {
-            invalidArgs: ['channelId'],
-          });
-      },
+      isChannelMember,
+      async (_parent, { channelId }, { models }) => {},
     ),
     message: async (_parent, { id }, { models }) => {
       return await models.Message.findByPk(id);

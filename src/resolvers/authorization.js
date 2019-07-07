@@ -1,4 +1,4 @@
-import { ForbiddenError } from 'apollo-server';
+import { ForbiddenError, UserInputError } from 'apollo-server';
 import { combineResolvers, skip } from 'graphql-resolvers';
 
 export const isAuthenticated = (_parent, _args, { me }) =>
@@ -31,6 +31,10 @@ export const isOwner = (modelName, idField = 'id') => async (
 export const isChannelMember = combineResolvers(
   isAuthenticated,
   async (_parent, { channelId }, { me, models }) => {
+    const channel = await models.Channel.findByPk(channelId);
+    if (!channel)
+      throw new UserInputError('This channel does not exist.');
+
     const member = await models.Member.findOne({
       where: { userId: me.id, channelId },
     });

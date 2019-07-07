@@ -131,6 +131,37 @@ describe('message', function() {
             );
           });
         });
+
+        describe('the channel exist', function() {
+          before(async function() {
+            this.channel = await models.Channel.create({
+              title: casual.title,
+              description: casual.short_description,
+              userId: 1,
+            });
+            await models.Member.create({
+              userId: 1,
+              channelId: this.channel.id,
+            });
+          });
+
+          describe('the user is not a channel member', function() {
+            before(async function() {
+              const response = await api.channelMessages(
+                { channelId: this.channel.id },
+                this.tokens.davidToken,
+              );
+
+              this.errorMessage = response.data.errors[0].message;
+            });
+
+            it('returns an error', function() {
+              expect(this.errorMessage).to.eql(
+                'Not a channel member.',
+              );
+            });
+          });
+        });
       });
     });
   });
