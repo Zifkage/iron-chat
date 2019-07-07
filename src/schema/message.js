@@ -12,6 +12,10 @@ export default gql`
     updateMessage(id: ID!, text: String!): Boolean!
   }
 
+  extend type Query {
+    channelMessages(channelId: ID!): [Message!]!
+  }
+
   type MessageConnection {
     edges: [Message!]!
     pageInfo: PageInfo!

@@ -362,6 +362,29 @@ export const createMessage = async (variables, token) =>
     },
   );
 
+export const channelMessages = async (variables, token) =>
+  await axios.post(
+    API_URL,
+    {
+      query: `
+        query($channelId: ID!) {
+          channelMessages(channelId: $channelId) {
+            text
+            user {
+              username
+            }
+          }
+        }
+      `,
+      variables,
+    },
+    {
+      headers: {
+        'x-token': token || '',
+      },
+    },
+  );
+
 // demand
 export const sendFriendshipDemand = async (variables, token) =>
   await axios.post(

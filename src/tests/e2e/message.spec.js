@@ -112,4 +112,26 @@ describe('message', function() {
       });
     });
   });
+
+  describe('query', function() {
+    describe('channelMessages(channelId: ID!): [Message!]!', function() {
+      context('user is authenticated', function() {
+        describe('the channel does not exist', function() {
+          before(async function() {
+            const response = await api.channelMessages(
+              { channelId: 200 },
+              this.tokens.zifstarkToken,
+            );
+            this.errorMessage = response.data.errors[0].message;
+          });
+
+          it('should returns an error', function() {
+            expect(this.errorMessage).to.eql(
+              'This channel does not exist.',
+            );
+          });
+        });
+      });
+    });
+  });
 });
