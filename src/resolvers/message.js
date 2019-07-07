@@ -10,7 +10,18 @@ export default {
   Query: {
     channelMessages: combineResolvers(
       isChannelMember,
-      async (_parent, { channelId }, { models }) => {},
+      async (_parent, { channelId }, { models }) => {
+        const messages = await models.Message.findAll({
+          where: {
+            channelId,
+          },
+          order: [['createdAt', 'ASC']],
+        });
+
+        if (!messages) return [];
+
+        return messages;
+      },
     ),
     message: async (_parent, { id }, { models }) => {
       return await models.Message.findByPk(id);
