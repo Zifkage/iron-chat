@@ -35,7 +35,7 @@ export default gql`
   }
 
   extend type Subscription {
-    messageCreated: MessageCreated!
+    messageCreated(channelId: ID!): MessageCreated!
   }
 
   type MessageCreated {

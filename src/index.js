@@ -6,6 +6,7 @@ import http from 'http';
 import jwt from 'jsonwebtoken';
 import cors from 'cors';
 import express from 'express';
+import pubsub, { EVENTS } from './subscription/index';
 import {
   ApolloServer,
   AuthenticationError,
@@ -50,6 +51,8 @@ const server = new ApolloServer({
     if (connection) {
       return {
         models,
+        pubsub,
+        EVENTS,
         loaders: {
           user: new DataLoader(keys =>
             loaders.user.batchUsers(keys, models),
@@ -67,6 +70,8 @@ const server = new ApolloServer({
       return {
         models,
         me,
+        pubsub,
+        EVENTS,
         secret: process.env.SECRET,
         loaders: {
           user: new DataLoader(keys =>

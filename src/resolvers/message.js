@@ -1,5 +1,5 @@
 import { combineResolvers } from 'graphql-resolvers';
-import { UserInputError } from 'apollo-server';
+import { withFilter } from 'graphql-yoga';
 import {
   isAuthenticated,
   isOwner,
@@ -30,12 +30,21 @@ export default {
   Mutation: {
     createMessage: combineResolvers(
       isChannelMember,
-      async (_parent, { channelId, text }, { me, models }) => {
-        return await models.Message.create({
+      async (
+        _parent,
+        { channelId, text },
+        { me, models, pubsub, EVENTS },
+      ) => {
+        const message = await models.Message.create({
           text,
           userId: me.id,
           channelId,
         });
+
+        pubsub.publish(EVENTS.MESSAGE.CREATED, {
+          messageCreated: { message: message.toJSON() },
+        });
+        return message;
       },
     ),
     deleteMessage: combineResolvers(
@@ -65,7 +74,17 @@ export default {
   },
   Subscription: {
     messageCreated: {
-      subscribe: () => pubsub.asyncIterator(EVENTS.MESSAGE.CREATED),
+      subscribe: withFilter(
+        (_parent, __args, { pubsub, EVENTS }) => {
+          return pubsub.asyncIterator(EVENTS.MESSAGE.CREATED);
+        },
+        (payload, variables) => {
+          return (
+            payload.messageCreated.message.channelId.toString() ===
+            variables.channelId
+          );
+        },
+      ),
     },
   },
 };
