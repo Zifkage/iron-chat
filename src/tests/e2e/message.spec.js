@@ -173,11 +173,13 @@ describe('message', function() {
                   discussionId: this.discussion.id,
                   userId: 1,
                   text: 'hello 1',
+                  status: 'SENT',
                 },
                 {
                   discussionId: this.discussion.id,
                   userId: 2,
                   text: 'hello 2',
+                  status: 'SENT',
                 },
               ]);
 

@@ -72,6 +72,7 @@ export default {
           text,
           userId: me.id,
           discussionId: d.id,
+          status: 'SENT',
           createdAt,
         }));
 
