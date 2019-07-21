@@ -115,22 +115,6 @@ export const deleteMessage = async (variables, token) =>
 
 // channel
 export const createChannel = async (variables, token) => {
-  if (!token) {
-    return await axios.post(API_URL, {
-      query: `
-        mutation ($title: String!, $description: String) {
-          createChannel(title: $title, description: $description) {
-            title
-            description
-            user {
-              username
-            }
-          }
-        }
-      `,
-      variables,
-    });
-  }
   return await axios.post(
     API_URL,
     {
@@ -155,7 +139,7 @@ export const createChannel = async (variables, token) => {
     },
     {
       headers: {
-        'x-token': token,
+        'x-token': token || '',
       },
     },
   );
@@ -346,9 +330,6 @@ export const createMessage = async (variables, token) =>
               user {
                 id
               }
-              channel {
-                id
-              }
               text
             }
           }
@@ -362,13 +343,13 @@ export const createMessage = async (variables, token) =>
     },
   );
 
-export const channelMessages = async (variables, token) =>
+export const discussionMessages = async (variables, token) =>
   await axios.post(
     API_URL,
     {
       query: `
-        query($channelId: ID!) {
-          channelMessages(channelId: $channelId) {
+        query($discussionId: ID!) {
+          discussionMessages(discussionId: $discussionId) {
             text
             user {
               username

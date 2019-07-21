@@ -5,6 +5,7 @@ import messageSchema from './message';
 import channelSchema from './channel';
 import memberSchema from './member';
 import demandSchema from './demand';
+import discussionSchema from './discussion';
 
 const linkSchema = gql`
   scalar Date
@@ -29,4 +30,5 @@ export default [
   channelSchema,
   memberSchema,
   demandSchema,
+  discussionSchema,
 ];

@@ -20,6 +20,7 @@ const models = {
   Member: sequelize.import('./member'),
   Demand: sequelize.import('./demand'),
   Friendship: sequelize.import('./friendship'),
+  Discussion: sequelize.import('./discussion'),
 };
 
 Object.keys(models).forEach(key => {

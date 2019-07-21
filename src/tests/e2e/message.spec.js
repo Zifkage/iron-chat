@@ -20,6 +20,12 @@ describe('message', function() {
           description: casual.short_description,
         });
 
+        this.discussion = await models.Discussion.create({
+          userId: 1,
+          channelId: this.channel.id,
+          deleted: false,
+        });
+
         await models.Member.create({
           userId: 1,
           channelId: this.channel.id,
@@ -32,7 +38,6 @@ describe('message', function() {
             channelId: this.channel.id,
             text: 'hello world!',
           });
-
           this.errorMessage = response.data.errors[0].message;
         });
 
@@ -72,7 +77,6 @@ describe('message', function() {
                 },
                 this.tokens.zifstarkToken,
               );
-
               this.errorMessage = response.data.errors[0].message;
             });
 
@@ -101,9 +105,6 @@ describe('message', function() {
                 user: {
                   id: '1',
                 },
-                channel: {
-                  id: this.channel.id.toString(),
-                },
                 text: 'hello world',
               });
             });
@@ -114,12 +115,12 @@ describe('message', function() {
   });
 
   describe('query', function() {
-    describe('channelMessages(channelId: ID!): [Message!]!', function() {
+    describe('discussionMessages(discussionId: ID!): [Message!]!', function() {
       context('user is authenticated', function() {
-        describe('the channel does not exist', function() {
+        describe('the discussion does not exist', function() {
           before(async function() {
-            const response = await api.channelMessages(
-              { channelId: 200 },
+            const response = await api.discussionMessages(
+              { discussionId: 200 },
               this.tokens.zifstarkToken,
             );
             this.errorMessage = response.data.errors[0].message;
@@ -127,17 +128,22 @@ describe('message', function() {
 
           it('should returns an error', function() {
             expect(this.errorMessage).to.eql(
-              'This channel does not exist.',
+              'This discussion does not exist.',
             );
           });
         });
 
-        describe('the channel exist', function() {
+        describe('the discussion exist', function() {
           before(async function() {
             this.channel = await models.Channel.create({
               title: casual.title,
               description: casual.short_description,
               userId: 1,
+            });
+            this.discussion = await models.Discussion.create({
+              userId: 1,
+              channelId: this.channel.id,
+              deleted: false,
             });
             await models.Member.create({
               userId: 1,
@@ -145,20 +151,56 @@ describe('message', function() {
             });
           });
 
-          describe('the user is not a channel member', function() {
+          describe('there is no message', function() {
             before(async function() {
-              const response = await api.channelMessages(
-                { channelId: this.channel.id },
-                this.tokens.davidToken,
+              const response = await api.discussionMessages(
+                { discussionId: this.discussion.id },
+                this.tokens.zifstarkToken,
               );
-
-              this.errorMessage = response.data.errors[0].message;
+              this.discussionMessages =
+                response.data.data.discussionMessages;
             });
 
-            it('returns an error', function() {
-              expect(this.errorMessage).to.eql(
-                'Not a channel member.',
+            it('returns an empty', function() {
+              expect(this.discussionMessages).to.be.empty;
+            });
+          });
+
+          describe('there are 2 messages', function() {
+            before(async function() {
+              await models.Message.bulkCreate([
+                {
+                  discussionId: this.discussion.id,
+                  userId: 1,
+                  text: 'hello 1',
+                },
+                {
+                  discussionId: this.discussion.id,
+                  userId: 2,
+                  text: 'hello 2',
+                },
+              ]);
+
+              const response = await api.discussionMessages(
+                { discussionId: this.discussion.id },
+                this.tokens.zifstarkToken,
               );
+
+              this.discussionMessages =
+                response.data.data.discussionMessages;
+            });
+
+            it('returns the messages', function() {
+              expect(this.discussionMessages).to.deep.equal([
+                {
+                  user: { username: 'zifstark' },
+                  text: 'hello 1',
+                },
+                {
+                  user: { username: 'ddavids' },
+                  text: 'hello 2',
+                },
+              ]);
             });
           });
         });

@@ -30,40 +30,44 @@ describe('channel', function() {
       context('user is authenticated', function() {
         before(async function() {
           this.expectedResult = {
-            data: {
-              createChannel: {
-                title: 'classmates',
-                description: 'a channel for my classmate and i',
-                user: {
-                  username: 'zifstark',
-                },
-              },
+            title: 'classmates',
+            description: 'a channel for my classmate and i',
+            user: {
+              username: 'zifstark',
             },
           };
 
-          this.result = await api.createChannel(
+          const result = await api.createChannel(
             {
               title: 'classmates',
               description: 'a channel for my classmate and i',
             },
             this.tokens.zifstarkToken,
           );
+
+          this.userDiscussions = await models.Discussion.findAll({
+            where: { userId: 1 },
+          });
+          this.createChannel = result.data.data.createChannel;
         });
 
         it('returns the newly created channel when valid data is given', async function() {
-          expect(this.result.data).to.containSubset(
+          expect(this.createChannel).to.containSubset(
             this.expectedResult,
           );
         });
 
         it('should automatically add the channel owner as member', function() {
-          const {
-            data: {
-              createChannel: { members },
-            },
-          } = this.result.data;
-          expect(members).to.deep.contain({
+          expect(this.createChannel.members).to.deep.contain({
             user: { username: 'zifstark' },
+          });
+        });
+
+        it('should create a new discussion for the user', async function() {
+          const { dataValues } = this.userDiscussions[0];
+          expect(dataValues).containSubset({
+            userId: 1,
+            channelId: parseInt(this.createChannel.id),
           });
         });
       });

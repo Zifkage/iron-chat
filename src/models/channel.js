@@ -19,6 +19,7 @@ const channel = (sequelize, DataTypes) => {
   Channel.associate = models => {
     Channel.belongsTo(models.User);
     Channel.hasMany(models.Member, { onDelete: 'CASCADE' });
+    Channel.hasMany(models.Discussion, { onDelete: 'CASCADE' });
   };
 
   return Channel;

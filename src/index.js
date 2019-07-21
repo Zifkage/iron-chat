@@ -60,6 +60,9 @@ const server = new ApolloServer({
           channel: new DataLoader(keys =>
             loaders.channel.batchChannels(keys, models),
           ),
+          discussion: new DataLoader(keys =>
+            loaders.discussion.batchDiscussions(keys, models),
+          ),
         },
       };
     }
@@ -79,6 +82,9 @@ const server = new ApolloServer({
           ),
           channel: new DataLoader(keys =>
             loaders.channel.batchChannels(keys, models),
+          ),
+          discussion: new DataLoader(keys =>
+            loaders.discussion.batchDiscussions(keys, models),
           ),
         },
       };

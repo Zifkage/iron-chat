@@ -24,6 +24,7 @@ export default {
       isOwner('Channel', 'channelId'),
       async (_parent, { channelId, userIds }, { models }) => {
         const membersToAdd = [];
+        const discussionsToCreate = [];
         const existingMembers = await models.Member.findAll({
           where: {
             channelId,
@@ -40,9 +41,15 @@ export default {
             channelId,
             userId,
           });
+          discussionsToCreate.push({
+            userId,
+            channelId,
+            deleted: false,
+          });
         });
 
         await models.Member.bulkCreate(membersToAdd);
+        await models.Discussion.bulkCreate(discussionsToCreate);
         const members = await models.Member.findAll({
           where: { channelId },
         });

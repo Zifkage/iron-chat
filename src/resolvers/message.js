@@ -1,19 +1,36 @@
 import { combineResolvers } from 'graphql-resolvers';
 import { withFilter } from 'graphql-yoga';
+import { UserInputError } from 'apollo-server';
 import {
   isAuthenticated,
-  isOwner,
   isChannelMember,
+  isOwner,
 } from './authorization';
 
 export default {
   Query: {
-    channelMessages: combineResolvers(
-      isChannelMember,
-      async (_parent, { channelId }, { models }) => {
+    discussionMessages: combineResolvers(
+      isAuthenticated,
+      isOwner('Discussion', 'discussionId'),
+      async (_parent, { discussionId }, { models }) => {
+        const discussion = await models.Discussion.findOne({
+          where: {
+            id: discussionId,
+            deleted: false,
+          },
+        });
+
+        if (!discussion) {
+          throw new UserInputError(
+            'This discussion does not exist.',
+            {
+              invalidArgs: ['discussionId'],
+            },
+          );
+        }
         const messages = await models.Message.findAll({
           where: {
-            channelId,
+            discussionId,
           },
           order: [['createdAt', 'ASC']],
         });
@@ -23,9 +40,6 @@ export default {
         return messages;
       },
     ),
-    message: async (_parent, { id }, { models }) => {
-      return await models.Message.findByPk(id);
-    },
   },
   Mutation: {
     createMessage: combineResolvers(
@@ -35,41 +49,65 @@ export default {
         { channelId, text },
         { me, models, pubsub, EVENTS },
       ) => {
-        const message = await models.Message.create({
+        if (!text) {
+          throw new UserInputError('A message has to have a text.', {
+            invalidArgs: ['text'],
+          });
+        }
+        const channelMembers = await models.Member.findAll({
+          where: { channelId },
+        });
+        const userIds = channelMembers.map(m => m.userId);
+        let discussions = await models.Discussion.findAll({
+          where: {
+            channelId,
+            userId: userIds,
+          },
+        });
+        const myDiscussion = discussions.find(
+          d => d.userId === me.id,
+        );
+        const createdAt = Date.now();
+        let newMessages = discussions.map(d => ({
           text,
           userId: me.id,
-          channelId,
+          discussionId: d.id,
+          createdAt,
+        }));
+
+        newMessages = await models.Message.bulkCreate(newMessages, {
+          returning: true,
         });
+
+        await models.Discussion.update(
+          {
+            deleted: false,
+          },
+          { where: { channelId } },
+        );
 
         pubsub.publish(EVENTS.MESSAGE.CREATED, {
-          messageCreated: { message: message.toJSON() },
+          messageCreated: {
+            message: {
+              text,
+              userId: me.id,
+              createdAt,
+              channelId,
+            },
+          },
         });
-        return message;
+        return newMessages.find(
+          m => m.discussionId === myDiscussion.id,
+        );
       },
     ),
-    deleteMessage: combineResolvers(
-      isAuthenticated,
-      isOwner('Message'),
-      async (_parent, { id }, { models }) => {
-        return await models.Message.destroy({ where: { id } });
-      },
-    ),
-    updateMessage: async (_parent, { id, text }, { models }) => {
-      const message = await models.Message.findByPk(id);
-      if (!message) {
-        return false;
-      }
-      const result = await message.update({ text });
-
-      return 'dataValues' in result;
-    },
   },
   Message: {
     user: async (message, _args, { loaders }) => {
       return await loaders.user.load(message.userId);
     },
-    channel: async (message, _arg, { loaders }) => {
-      return await loaders.channel.load(message.channelId);
+    discussion: async (message, _args, { loaders }) => {
+      return await loaders.discussion.load(message.discussionId);
     },
   },
   Subscription: {

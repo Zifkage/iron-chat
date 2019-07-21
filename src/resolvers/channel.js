@@ -15,8 +15,14 @@ export default {
                 userId: me.id,
               },
             ],
+            discussions: [
+              {
+                userId: me.id,
+                deleted: false,
+              },
+            ],
           },
-          { include: [models.Member] },
+          { include: [models.Member, models.Discussion] },
         );
       },
     ),
